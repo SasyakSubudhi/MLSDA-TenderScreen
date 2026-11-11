@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "bid_id": "BID-370-001",
+  "tender_id": "TENDER/2024-25/370",
+  "bidder": {
+    "legal_name": "Deccan Systems Ltd",
+    "declared_category": "large_enterprise",
+    "country_of_incorporation": "IN",
+    "date_of_incorporation": "2004-06-01",
+    "manufactures_own_goods": true
+  },
+  "financials": {
+    "annual_turnover_inr": {
+      "2019-20": 5200000.0,
+      "2020-21": 6100000.0,
+      "2021-22": 5800000.0,
+      "2022-23": 7000000.0,
+      "2023-24": 7500000.0
+    }
+  },
+  "experience": {
+    "similar_orders_count": 9
+  },
+  "emd": {
+    "status": "paid",
+    "amount_inr": 24000,
+    "transaction_ref": "EWZ-TXN-001"
+  },
+  "local_content_percent": 60,
+  "supplier_class": "class_I",
+  "documents": {
+    "audited_financial_statements": true,
+    "ca_certificate": true,
+    "purchase_orders": true,
+    "user_certificates": true,
+    "digitally_signed_tender": true,
+    "blacklisting_declaration": true,
+    "mii_self_declaration": true,
+    "msme_certificate": false,
+    "startup_recognition_certificate": false
+  },
+  "remarks": "Authorised partner of the OEM; supplied desktops to two NITs."
+}

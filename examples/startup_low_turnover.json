@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "bid_id": "BID-370-002",
+  "tender_id": "TENDER/2024-25/370",
+  "bidder": {
+    "legal_name": "Nimbus Compute Pvt Ltd",
+    "declared_category": "startup",
+    "country_of_incorporation": "IN",
+    "date_of_incorporation": "2021-04-12",
+    "manufactures_own_goods": true,
+    "dpiit_recognition": "DIPP123456"
+  },
+  "financials": {
+    "annual_turnover_inr": {
+      "2019-20": 0,
+      "2020-21": 0,
+      "2021-22": 800000.0,
+      "2022-23": 1500000.0,
+      "2023-24": 2100000.0
+    }
+  },
+  "experience": {
+    "similar_orders_count": 6
+  },
+  "emd": {
+    "status": "paid",
+    "amount_inr": 24000,
+    "transaction_ref": "EWZ-TXN-002"
+  },
+  "local_content_percent": 60,
+  "supplier_class": "class_I",
+  "documents": {
+    "audited_financial_statements": true,
+    "ca_certificate": true,
+    "purchase_orders": true,
+    "user_certificates": true,
+    "digitally_signed_tender": true,
+    "blacklisting_declaration": true,
+    "mii_self_declaration": true,
+    "msme_certificate": false,
+    "startup_recognition_certificate": true
+  },
+  "remarks": "DPIIT-recognised startup; assembles desktops in Kochi."
+}

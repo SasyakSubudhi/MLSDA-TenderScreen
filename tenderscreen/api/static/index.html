@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TenderScreen - Bid Compliance Screening</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1d2330; --muted:#5f6b7a; --line:#dde2e8; --accent:#2457c5;
+          --ok:#1f7a3f; --warn:#a15c00; --bad:#b42318; --esc:#6b3fa0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:#16213a; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  header .sub { color:#b9c3d6; font-size:12px; }
+  header nav { margin-left:auto; display:flex; gap:12px; }
+  header a { color:#cfe0ff; font-size:13px; }
+  #sys { font-size:12px; color:#d8deea; width:100%; }
+  main { display:grid; grid-template-columns: minmax(320px, 430px) 1fr; gap:16px; padding:16px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px; }
+  h2 { font-size:14px; margin:0 0 10px; }
+  textarea { width:100%; height:330px; font:12px/1.4 ui-monospace,Consolas,monospace; border:1px solid var(--line); border-radius:6px; padding:8px; }
+  button { font:inherit; border:1px solid var(--line); background:#fff; border-radius:6px; padding:6px 10px; cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button:disabled { opacity:.5; cursor:default; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0; }
+  .ex button { font-size:12px; }
+  .badge { display:inline-block; border-radius:12px; padding:2px 10px; font-weight:600; font-size:12px; color:#fff; }
+  .route { font-size:16px; padding:6px 14px; border-radius:6px; }
+  .MET,.pass_to_technical_evaluation { background:var(--ok); }
+  .UNMET,.reject_with_cited_condition { background:var(--bad); }
+  .INSUFFICIENT,.seek_clarification { background:var(--warn); }
+  .CONFLICT,.ESCALATE,.EVIDENCE_MISSING,.escalate_to_human { background:var(--esc); }
+  table { border-collapse:collapse; width:100%; }
+  td, th { border-top:1px solid var(--line); padding:8px 6px; vertical-align:top; text-align:left; }
+  th { font-size:12px; color:var(--muted); font-weight:600; }
+  .quote { border-left:3px solid var(--accent); background:#f3f6fd; padding:6px 8px; margin:6px 0; font-size:12.5px; }
+  .src { color:var(--muted); font-size:11.5px; }
+  .muted { color:var(--muted); }
+  .esc { border:2px solid var(--esc); background:#f6f1fb; border-radius:8px; padding:10px 12px; margin:10px 0; }
+  .err { border:2px solid var(--bad); background:#fdf1f0; border-radius:8px; padding:10px 12px; }
+  .checks span { display:inline-block; margin:2px 6px 2px 0; font-size:12px; }
+  .pass { color:var(--ok); } .fail { color:var(--bad); }
+  details { margin-top:8px; }
+  pre { white-space:pre-wrap; word-break:break-word; font-size:11.5px; background:#f6f7f9; padding:8px; border-radius:6px; max-height:420px; overflow:auto; }
+  .disclaimer { font-size:12px; color:var(--muted); border-top:1px dashed var(--line); padding-top:8px; margin-top:12px; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>TenderScreen - public procurement bid compliance screening</h1>
+    <div class="sub">IIT Palakkad TENDER/2024-25/370 &middot; screening findings only &mdash; the Tender Committee decides</div>
+  </div>
+  <nav>
+    <a href="/docs" target="_blank">API docs</a>
+    <a href="/v1/contract" target="_blank">Data contract</a>
+    <a id="lnk-grafana" target="_blank">Grafana</a>
+    <a id="lnk-jaeger" target="_blank">Jaeger</a>
+    <a id="lnk-prom" target="_blank">Prometheus</a>
+  </nav>
+  <div id="sys">loading system status...</div>
+</header>
+<main>
+  <section class="card">
+    <h2>1. Bid summary</h2>
+    <div class="row ex" id="examples"></div>
+    <textarea id="bid" spellcheck="false"></textarea>
+    <div class="row">
+      <label>Prompt version <select id="pv"><option value="">default</option><option>v1</option><option>v2</option></select></label>
+      <label title="Demo: make the drafting step cite a passage that was never retrieved, to show self-verification">
+        <input type="checkbox" id="fault"> inject unsupported citation (demo)</label>
+    </div>
+    <div class="row">
+      <button class="primary" id="submit">Screen this bid</button>
+      <span id="submit-msg" class="muted"></span>
+    </div>
+    <details>
+      <summary>Reliability demo controls</summary>
+      <div class="row">
+        Model provider (stub):
+        <button data-mode="ok">ok</button><button data-mode="down">down</button>
+        <button data-mode="slow">slow</button><button data-mode="flaky">flaky</button>
+        <button id="reset">reset breaker</button>
+      </div>
+      <div class="muted" id="mode-msg"></div>
+    </details>
+  </section>
+
+  <section class="card" id="out">
+    <h2>2. Screening finding</h2>
+    <div class="muted">Submit a bid to see the routed recommendation, its cited basis and the escalation path.</div>
+  </section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const host = location.hostname;
+$("#lnk-grafana").href = `http://${host}:3000/d/tenderscreen`;
+$("#lnk-jaeger").href = `http://${host}:16686`;
+$("#lnk-prom").href = `http://${host}:9090/targets`;
+let EXAMPLES = {}, POLL = null, CURRENT = null;
+
+async function loadExamples() {
+  EXAMPLES = await (await fetch("/v1/examples")).json();
+  const box = $("#examples");
+  Object.keys(EXAMPLES).forEach(name => {
+    const b = document.createElement("button");
+    b.textContent = name.replaceAll("_", " ");
+    b.onclick = () => { $("#bid").value = JSON.stringify(EXAMPLES[name], null, 2); };
+    box.appendChild(b);
+  });
+  $("#bid").value = JSON.stringify(EXAMPLES["startup_low_turnover"] || Object.values(EXAMPLES)[0], null, 2);
+}
+
+async function loadSystem() {
+  try {
+    const s = await (await fetch("/v1/system")).json();
+    const br = s.llm_gateway?.breaker?.state ?? s.llm_gateway?.status;
+    const workers = Object.keys(s.workers || {});
+    const nRes = workers.filter(w => w.startsWith("research")).length, nVer = workers.filter(w => w.startsWith("verifier")).length;
+    $("#sys").innerHTML = `provider: <b>${esc(s.llm_gateway?.provider ?? "?")}</b> &middot; circuit breaker: <b>${esc(br)}</b>
+      &middot; workers: research ${nRes}, verifier ${nVer} &middot; queue: ${s.queues.research}/${s.queues.verify}
+      &middot; index: ${s.index.chunks ?? "?"} chunks (${esc(s.index.embedding_backend)}) &middot; prompt ${esc(s.prompt_version)}`;
+  } catch (e) { $("#sys").textContent = "system status unavailable"; }
+}
+
+function renderErrors(d) {
+  const rows = (d.errors || []).map(e => `<li><code>${esc(e.field)}</code> &mdash; ${esc(e.error)}: ${esc(e.message || e.pattern || e.term || "")}</li>`).join("");
+  $("#out").innerHTML = `<h2>2. Screening finding</h2><div class="err"><b>Request rejected at the ingestion boundary and quarantined</b>
+    (${esc(d.reason || d.error)}). Quarantine id <code>${esc(d.quarantine_id)}</code>.
+    <b>No agent run was started.</b><ul>${rows}</ul></div>
+    <p class="muted">See <a href="/v1/quarantine" target="_blank">/v1/quarantine</a> for the stored record.</p>`;
+}
+
+function citeHtml(c) {
+  return `<div class="quote">&ldquo;${esc(c.quote)}&rdquo;
+    <div class="src">${esc(c.evidence_id || "")} &middot; ${esc(c.source)} &middot; p.${esc(c.original_page)} &middot;
+    <code>${esc(c.chunk_id)}</code> &middot; ${esc((c.role||"").replaceAll("_"," "))} &middot;
+    <a href="${esc(c.url)}#page=${esc(c.page)}" target="_blank">source PDF</a></div></div>`;
+}
+
+function renderResult(run) {
+  const r = run.result;
+  CURRENT = run.run_id;
+  if (!r) { $("#out").innerHTML = `<h2>2. Screening finding</h2><p>Status: <b>${esc(run.status)}</b> (${run.elapsed_s}s)
+     ${run.attempt > 1 ? " &middot; attempt " + run.attempt + " after verification failure" : ""}</p>
+     <p class="muted">The research agent is gathering evidence; the verifier checks it before anything is returned.</p>`; return; }
+  const findings = (r.findings || []).map(f => `<tr><td><b>${esc(f.title)}</b><div class="src">${esc(f.condition_id)}</div></td>
+      <td><span class="badge ${esc(f.status)}">${esc(f.status)}</span></td>
+      <td>${esc(f.justification)}${(f.citations||[]).map(citeHtml).join("")}</td></tr>`).join("");
+  let escHtml = "";
+  if (r.escalation) {
+    const e = r.escalation;
+    escHtml = `<div class="esc"><b>Escalation path &rarr; ${esc(e.to)}</b>
+      <ul>${(e.reasons||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      ${(e.next_steps||[]).length ? "<b>Next steps</b><ul>" + e.next_steps.map(x => `<li>${esc(x)}</li>`).join("") + "</ul>" : ""}
+      ${(e.citations||[]).length ? "<b>Provisions in tension</b>" + e.citations.map(citeHtml).join("") : ""}
+      ${(e.retrieved_passages||[]).length ? "<b>Retrieved passages</b>" + e.retrieved_passages.map(citeHtml).join("") : ""}</div>`;
+  }
+  const checks = (r.verification?.checks || []).map(c => `<span class="${c.passed ? "pass" : "fail"}">${c.passed ? "&#10003;" : "&#10007;"} ${esc(c.check)}</span>`).join("");
+  $("#out").innerHTML = `<h2>2. Screening finding</h2>
+    <div class="row"><span class="badge route ${esc(r.route)}">${esc(r.route_label)}</span>
+      ${r.degraded ? '<span class="badge ESCALATE">degraded - rule-based fallback</span>' : ""}
+      ${r.verified ? '<span class="badge MET">verified</span>' : '<span class="badge UNMET">unverified - withheld</span>'}
+      <span class="muted">run <code>${esc(run.run_id)}</code> &middot; ${esc(r.e2e_seconds)} s &middot; attempt ${esc(r.verification?.attempt)}
+      &middot; prompt ${esc(r.prompt_version)} &middot; bidder classified: <b>${esc(r.bidder_category)}</b></span></div>
+    <p>${esc(r.summary)}</p>
+    ${escHtml}
+    ${r.withheld ? `<p class="err">${esc(r.withheld)}</p>` : ""}
+    ${findings ? `<table><tr><th>Condition</th><th>Status</th><th>Justification and cited evidence</th></tr>${findings}</table>` : ""}
+    <div class="checks"><b>Self-verification:</b> ${checks}</div>
+    <details id="trace-box"><summary>Full run trace (every tool call, query, passage, prompt version, latency, tokens, cost)</summary>
+      <p><a href="/v1/screenings/${esc(run.run_id)}/trace" target="_blank">open trace JSON</a></p><pre id="trace">loading...</pre></details>
+    <div class="row"><b>Was this finding satisfactory?</b>
+      <input id="fb-reason" placeholder="reason" size="30">
+      <button data-fb="1">Yes</button><button data-fb="0">No</button><span id="fb-msg" class="muted"></span></div>
+    <div class="disclaimer">${esc(r.disclaimer || "")}</div>`;
+  document.querySelectorAll("[data-fb]").forEach(b => b.onclick = sendFeedback);
+  document.querySelector("#trace-box")?.addEventListener("toggle", loadTrace, {once: true});
+}
+
+async function loadTrace() {
+  const t = await (await fetch(`/v1/screenings/${CURRENT}/trace`)).json();
+  const lines = t.events.map(e => {
+    const base = `${new Date(e.ts*1000).toISOString().slice(11,23)}  ${(e.agent||e.service||"").padEnd(9)} ${e.type}`;
+    if (e.type === "tool_call") return `${base}  ${e.tool} ${JSON.stringify(e.args)} -> [${(e.passages||[]).map(p=>p.chunk_id).join(", ")}] ${e.latency_ms}ms`;
+    if (e.type === "llm_call") return `${base}  ${e.task} ${e.ok ? "ok" : "FAILED "+e.error} ${e.prompt_tokens||0}+${e.completion_tokens||0} tok $${e.cost_usd||0} ${e.latency_ms||""}ms ${e.prompt_version}`;
+    if (e.type === "plan_decision") return `${base}  chose ${e.chosen.join(",")} via ${e.decision_source}: ${e.reason}`;
+    if (e.type === "verification") return `${base}  attempt ${e.attempt}: ${e.decision} ${e.checks.filter(c=>!c.passed).map(c=>c.check).join(",")}`;
+    if (e.type === "reflect") return `${base}  derived=${JSON.stringify(e.derived_queries)} refs=${JSON.stringify(e.cross_references)}`;
+    return `${base}  ${JSON.stringify(Object.fromEntries(Object.entries(e).filter(([k]) => !["ts","type","agent","service"].includes(k))))}`;
+  });
+  $("#trace").textContent = `summary: ${JSON.stringify(t.summary, null, 1)}\n\n` + lines.join("\n");
+}
+
+async function sendFeedback(ev) {
+  const reason = $("#fb-reason").value || (ev.target.dataset.fb === "1" ? "finding matched expectation" : "finding did not match expectation");
+  const r = await fetch(`/v1/screenings/${CURRENT}/feedback`, {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({satisfactory: ev.target.dataset.fb === "1", reason})});
+  $("#fb-msg").textContent = r.ok ? "feedback stored" : "feedback rejected";
+}
+
+async function poll(id) {
+  clearTimeout(POLL);
+  const run = await (await fetch(`/v1/screenings/${id}`)).json();
+  renderResult(run);
+  if (!run.result) POLL = setTimeout(() => poll(id), 1000);
+  else { $("#submit").disabled = false; $("#submit-msg").textContent = ""; loadSystem(); }
+}
+
+$("#submit").onclick = async () => {
+  let body;
+  try { body = JSON.parse($("#bid").value); } catch (e) { body = $("#bid").value; }
+  const qs = new URLSearchParams();
+  if ($("#pv").value) qs.set("prompt_version", $("#pv").value);
+  if ($("#fault").checked) qs.set("demo_fault", "unsupported_citation");
+  $("#submit").disabled = true; $("#submit-msg").textContent = "submitting...";
+  const r = await fetch(`/v1/screenings?${qs}`, {method:"POST", headers:{"Content-Type":"application/json", "X-Client-Id":"web-ui"},
+    body: typeof body === "string" ? body : JSON.stringify(body)});
+  const d = await r.json();
+  if (r.status === 422) { renderErrors(d); $("#submit").disabled = false; $("#submit-msg").textContent = ""; return; }
+  if (r.status === 429) { $("#submit-msg").textContent = `rate limited - retry in ${d.retry_after_s}s`; $("#submit").disabled = false; return; }
+  $("#submit-msg").textContent = d.cached ? "served from cache" : `queued as ${d.run_id}`;
+  poll(d.run_id);
+};
+
+document.querySelectorAll("[data-mode]").forEach(b => b.onclick = async () => {
+  const r = await fetch("/v1/admin/provider-mode", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({mode: b.dataset.mode})});
+  $("#mode-msg").textContent = "provider mode: " + JSON.stringify(await r.json()); loadSystem();
+});
+$("#reset").onclick = async () => { const r = await fetch("/v1/admin/breaker-reset", {method:"POST"});
+  $("#mode-msg").textContent = "breaker: " + JSON.stringify(await r.json()); loadSystem(); };
+
+loadExamples(); loadSystem(); setInterval(loadSystem, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+# TenderScreen - start everything with:   docker compose up --build
+# Scale the research agent with:          docker compose up -d --scale agent-worker=3
+#
+# Configuration is injected at runtime: .env.example holds the documented,
+# non-secret defaults (so a clean clone starts); an optional .env (git-ignored)
+# overrides them and is where API keys go.
+
+x-app: &app
+  image: tenderscreen-app:latest
+  build:
+    context: .
+  env_file:
+    - path: .env.example
+      required: true
+    - path: .env
+      required: false
+  restart: unless-stopped
+  networks: [tenderscreen]
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redis-data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [tenderscreen]
+
+  # one-shot: read -> parse -> chunk -> embed -> index (idempotent, incremental)
+  indexer:
+    <<: *app
+    command: ["python", "-m", "tenderscreen.retrieval.ingest"]
+    environment:
+      SERVICE_NAME: indexer
+    volumes: [index-data:/data]
+    restart: "no"
+
+  llm-stub:
+    <<: *app
+    command: ["uvicorn", "tenderscreen.llm.stub_service:app", "--host", "0.0.0.0", "--port", "8200", "--no-access-log"]
+    environment:
+      SERVICE_NAME: llm-stub
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8200/health',timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  llm-gateway:
+    <<: *app
+    command: ["uvicorn", "tenderscreen.llm.gateway:app", "--host", "0.0.0.0", "--port", "8100", "--no-access-log"]
+    environment:
+      SERVICE_NAME: llm-gateway
+    depends_on:
+      redis: {condition: service_healthy}
+      llm-stub: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8100/health',timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    <<: *app
+    command: ["uvicorn", "tenderscreen.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
+    environment:
+      SERVICE_NAME: api
+    ports: ["${API_PORT:-8000}:8000"]
+    volumes: [index-data:/data:ro]
+    depends_on:
+      redis: {condition: service_healthy}
+      llm-gateway: {condition: service_healthy}
+      indexer: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # research agent (agent 1) - the service to scale
+  agent-worker:
+    <<: *app
+    command: ["python", "-m", "tenderscreen.agents.worker"]
+    environment:
+      SERVICE_NAME: agent-worker
+      WORKER_ROLE: research
+      METRICS_PORT: "9101"
+    volumes: [index-data:/data]
+    depends_on:
+      redis: {condition: service_healthy}
+      llm-gateway: {condition: service_healthy}
+      indexer: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:9101/metrics',timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  # verifier agent (agent 2)
+  verifier-worker:
+    <<: *app
+    command: ["python", "-m", "tenderscreen.agents.worker"]
+    environment:
+      SERVICE_NAME: verifier-worker
+      WORKER_ROLE: verifier
+      METRICS_PORT: "9102"
+    depends_on:
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:9102/metrics',timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=7d"]
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports: ["9090:9090"]
+    restart: unless-stopped
+    networks: [tenderscreen]
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/tenderscreen.json
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports: ["3000:3000"]
+    depends_on: [prometheus]
+    restart: unless-stopped
+    networks: [tenderscreen]
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports: ["16686:16686"]
+    restart: unless-stopped
+    networks: [tenderscreen]
+
+  # load generator - only started on demand:
+  #   docker compose --profile loadtest run --rm locust ...
+  locust:
+    image: locustio/locust:2.32.5
+    profiles: ["loadtest"]
+    user: "0"   # write CSV results into the bind-mounted folder on any host OS
+    volumes: ["./loadtest:/mnt/locust", "./examples:/mnt/examples:ro"]
+    working_dir: /mnt/locust
+    entrypoint: ["locust", "-f", "/mnt/locust/locustfile.py"]
+    networks: [tenderscreen]
+
+volumes:
+  redis-data:
+  index-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  tenderscreen:

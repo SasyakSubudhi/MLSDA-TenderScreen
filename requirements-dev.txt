@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest==8.3.4
+locust==2.32.5
+fakeredis==2.26.2

@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "bid_id": "BID-370-008",
+  "tender_id": "TENDER/2099-00/001",
+  "bidder": {
+    "legal_name": "Broken Data Co",
+    "declared_category": "startup",
+    "country_of_incorporation": "IN",
+    "date_of_incorporation": "2030-01-01",
+    "manufactures_own_goods": true
+  },
+  "financials": {
+    "annual_turnover_inr": {
+      "2019-20": -5,
+      "2020-21": 0,
+      "2021-22": 100000.0,
+      "2022-23": 100000.0
+    }
+  },
+  "experience": {
+    "similar_orders_count": 3
+  },
+  "emd": {
+    "status": "paid",
+    "amount_inr": 0,
+    "transaction_ref": "EWZ-TXN-008"
+  },
+  "local_content_percent": 150,
+  "supplier_class": "class_II",
+  "documents": {
+    "audited_financial_statements": true,
+    "ca_certificate": true,
+    "purchase_orders": true,
+    "user_certificates": true,
+    "digitally_signed_tender": true,
+    "blacklisting_declaration": true,
+    "mii_self_declaration": true,
+    "msme_certificate": false,
+    "startup_recognition_certificate": false
+  },
+  "remarks": ""
+}

@@ -1,0 +1,8 @@
+.git
+.env
+**/__pycache__
+**/*.pyc
+data/
+results/
+.pytest_cache
+*.zip

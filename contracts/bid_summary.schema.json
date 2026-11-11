@@ -1,0 +1,313 @@
+{
+ "$defs": {
+  "Bidder": {
+   "additionalProperties": false,
+   "properties": {
+    "legal_name": {
+     "description": "Registered name of the bidder (free text)",
+     "maxLength": 200,
+     "minLength": 2,
+     "title": "Legal Name",
+     "type": "string"
+    },
+    "declared_category": {
+     "enum": [
+      "large_enterprise",
+      "mse",
+      "startup",
+      "consortium",
+      "foreign",
+      "not_stated"
+     ],
+     "title": "Declared Category",
+     "type": "string"
+    },
+    "country_of_incorporation": {
+     "description": "ISO 3166-1 alpha-2",
+     "pattern": "^[A-Z]{2}$",
+     "title": "Country Of Incorporation",
+     "type": "string"
+    },
+    "date_of_incorporation": {
+     "format": "date",
+     "title": "Date Of Incorporation",
+     "type": "string"
+    },
+    "manufactures_own_goods": {
+     "description": "False if the bidder is trading goods made by others",
+     "title": "Manufactures Own Goods",
+     "type": "boolean"
+    },
+    "udyam_registration": {
+     "anyOf": [
+      {
+       "pattern": "^UDYAM-[A-Z]{2}-\\d{2}-\\d{7}$",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Udyam Registration"
+    },
+    "nsic_registration": {
+     "anyOf": [
+      {
+       "pattern": "^[A-Za-z0-9/-]{4,40}$",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Nsic Registration"
+    },
+    "dpiit_recognition": {
+     "anyOf": [
+      {
+       "pattern": "^DIPP\\d{3,8}$",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Dpiit Recognition"
+    },
+    "consortium_members": {
+     "items": {
+      "type": "string"
+     },
+     "maxItems": 10,
+     "title": "Consortium Members",
+     "type": "array"
+    }
+   },
+   "required": [
+    "legal_name",
+    "declared_category",
+    "country_of_incorporation",
+    "date_of_incorporation",
+    "manufactures_own_goods"
+   ],
+   "title": "Bidder",
+   "type": "object"
+  },
+  "Documents": {
+   "additionalProperties": false,
+   "properties": {
+    "audited_financial_statements": {
+     "default": false,
+     "title": "Audited Financial Statements",
+     "type": "boolean"
+    },
+    "ca_certificate": {
+     "default": false,
+     "title": "Ca Certificate",
+     "type": "boolean"
+    },
+    "purchase_orders": {
+     "default": false,
+     "title": "Purchase Orders",
+     "type": "boolean"
+    },
+    "user_certificates": {
+     "default": false,
+     "title": "User Certificates",
+     "type": "boolean"
+    },
+    "digitally_signed_tender": {
+     "default": false,
+     "title": "Digitally Signed Tender",
+     "type": "boolean"
+    },
+    "blacklisting_declaration": {
+     "default": false,
+     "title": "Blacklisting Declaration",
+     "type": "boolean"
+    },
+    "mii_self_declaration": {
+     "default": false,
+     "title": "Mii Self Declaration",
+     "type": "boolean"
+    },
+    "msme_certificate": {
+     "default": false,
+     "title": "Msme Certificate",
+     "type": "boolean"
+    },
+    "startup_recognition_certificate": {
+     "default": false,
+     "title": "Startup Recognition Certificate",
+     "type": "boolean"
+    }
+   },
+   "title": "Documents",
+   "type": "object"
+  },
+  "Emd": {
+   "additionalProperties": false,
+   "properties": {
+    "status": {
+     "enum": [
+      "paid",
+      "exemption_claimed",
+      "not_paid"
+     ],
+     "title": "Status",
+     "type": "string"
+    },
+    "amount_inr": {
+     "maximum": 1000000000.0,
+     "minimum": 0.0,
+     "title": "Amount Inr",
+     "type": "number"
+    },
+    "transaction_ref": {
+     "anyOf": [
+      {
+       "pattern": "^[A-Za-z0-9-]{4,40}$",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Transaction Ref"
+    }
+   },
+   "required": [
+    "status",
+    "amount_inr"
+   ],
+   "title": "Emd",
+   "type": "object"
+  },
+  "Experience": {
+   "additionalProperties": false,
+   "properties": {
+    "similar_orders_count": {
+     "description": "Desktop-computer orders from CFTIs/Govt, last 5 FYs",
+     "maximum": 10000,
+     "minimum": 0,
+     "title": "Similar Orders Count",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "similar_orders_count"
+   ],
+   "title": "Experience",
+   "type": "object"
+  },
+  "Financials": {
+   "additionalProperties": false,
+   "properties": {
+    "annual_turnover_inr": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "description": "Audited turnover in INR for each of the five financial years 2019-20 .. 2023-24",
+     "title": "Annual Turnover Inr",
+     "type": "object"
+    }
+   },
+   "required": [
+    "annual_turnover_inr"
+   ],
+   "title": "Financials",
+   "type": "object"
+  }
+ },
+ "additionalProperties": false,
+ "properties": {
+  "schema_version": {
+   "const": "1.0",
+   "title": "Schema Version",
+   "type": "string"
+  },
+  "bid_id": {
+   "pattern": "^[A-Za-z0-9._-]{3,40}$",
+   "title": "Bid Id",
+   "type": "string"
+  },
+  "tender_id": {
+   "const": "TENDER/2024-25/370",
+   "title": "Tender Id",
+   "type": "string"
+  },
+  "bidder": {
+   "$ref": "#/$defs/Bidder"
+  },
+  "financials": {
+   "$ref": "#/$defs/Financials"
+  },
+  "experience": {
+   "$ref": "#/$defs/Experience"
+  },
+  "emd": {
+   "$ref": "#/$defs/Emd"
+  },
+  "local_content_percent": {
+   "maximum": 100.0,
+   "minimum": 0.0,
+   "title": "Local Content Percent",
+   "type": "number"
+  },
+  "supplier_class": {
+   "enum": [
+    "class_I",
+    "class_II",
+    "non_local"
+   ],
+   "title": "Supplier Class",
+   "type": "string"
+  },
+  "documents": {
+   "$ref": "#/$defs/Documents"
+  },
+  "remarks": {
+   "anyOf": [
+    {
+     "maxLength": 2000,
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "description": "Free text from the bidder (untrusted)",
+   "title": "Remarks"
+  }
+ },
+ "required": [
+  "schema_version",
+  "bid_id",
+  "tender_id",
+  "bidder",
+  "financials",
+  "experience",
+  "emd",
+  "local_content_percent",
+  "supplier_class",
+  "documents"
+ ],
+ "title": "BidSummary v1.0",
+ "type": "object",
+ "$id": "https://tenderscreen.local/contracts/bid_summary/1.0",
+ "x-cross-field-rules": [
+  "financials.annual_turnover_inr must contain exactly the five years 2019-20 .. 2023-24, each 0 .. 1e13",
+  "bidder.date_of_incorporation must be after 1850-01-01 and not after the tender closing date (2025-01-07)",
+  "declared_category=startup requires bidder.dpiit_recognition",
+  "declared_category=mse requires bidder.udyam_registration or bidder.nsic_registration",
+  "declared_category=consortium requires at least two consortium_members; other categories must have none",
+  "declared_category=foreign if and only if country_of_incorporation is not IN",
+  "emd.status=paid requires emd.amount_inr > 0 and emd.transaction_ref; other statuses require amount_inr = 0",
+  "supplier_class class_I requires local_content_percent >= 50; class_II requires 20 <= value < 50; non_local requires value < 20 (Make in India Order 2017, as revised 16-09-2020)"
+ ]
+}

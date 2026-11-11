@@ -1,0 +1,21 @@
+{
+ "additionalProperties": false,
+ "properties": {
+  "satisfactory": {
+   "title": "Satisfactory",
+   "type": "boolean"
+  },
+  "reason": {
+   "maxLength": 500,
+   "minLength": 3,
+   "title": "Reason",
+   "type": "string"
+  }
+ },
+ "required": [
+  "satisfactory",
+  "reason"
+ ],
+ "title": "FeedbackIn",
+ "type": "object"
+}

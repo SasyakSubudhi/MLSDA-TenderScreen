@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "bid_id": "BID-370-004",
+  "tender_id": "TENDER/2024-25/370",
+  "bidder": {
+    "legal_name": "Palakkad Microtech",
+    "declared_category": "mse",
+    "country_of_incorporation": "IN",
+    "date_of_incorporation": "2015-08-10",
+    "manufactures_own_goods": true,
+    "udyam_registration": "UDYAM-KL-07-0012345"
+  },
+  "financials": {
+    "annual_turnover_inr": {
+      "2019-20": 3000000.0,
+      "2020-21": 3200000.0,
+      "2021-22": 3500000.0,
+      "2022-23": 4000000.0,
+      "2023-24": 4400000.0
+    }
+  },
+  "experience": {
+    "similar_orders_count": 6
+  },
+  "emd": {
+    "status": "exemption_claimed",
+    "amount_inr": 0
+  },
+  "local_content_percent": 60,
+  "supplier_class": "class_I",
+  "documents": {
+    "audited_financial_statements": true,
+    "ca_certificate": true,
+    "purchase_orders": true,
+    "user_certificates": true,
+    "digitally_signed_tender": true,
+    "blacklisting_declaration": true,
+    "mii_self_declaration": true,
+    "msme_certificate": true,
+    "startup_recognition_certificate": false
+  },
+  "remarks": ""
+}
