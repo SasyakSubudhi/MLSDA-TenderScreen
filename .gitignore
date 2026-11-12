@@ -8,3 +8,4 @@ venv/
 *.zip
 .env.before-*
 eval/results/trulens.sqlite
+docs/.preview/
