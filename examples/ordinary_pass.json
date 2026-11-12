@@ -1,41 +1,45 @@
 {
   "schema_version": "1.0",
-  "bid_id": "BID-370-001",
-  "tender_id": "TENDER/2024-25/370",
+  "bid_id": "BID-053-001",
+  "tender_id": "IITPKD/AR/RS/053/2018-19",
   "bidder": {
-    "legal_name": "Deccan Systems Ltd",
+    "legal_name": "Deccan Systems Pvt Ltd",
     "declared_category": "large_enterprise",
     "country_of_incorporation": "IN",
-    "date_of_incorporation": "2004-06-01",
-    "manufactures_own_goods": true
+    "date_of_incorporation": "2006-06-01",
+    "is_oem": false,
+    "registered_office_state": "Kerala",
+    "service_centre_states": [
+      "Kerala",
+      "Tamil Nadu"
+    ]
   },
   "financials": {
     "annual_turnover_inr": {
-      "2019-20": 5200000.0,
-      "2020-21": 6100000.0,
-      "2021-22": 5800000.0,
-      "2022-23": 7000000.0,
-      "2023-24": 7500000.0
+      "2015-16": 1850000,
+      "2016-17": 2100000,
+      "2017-18": 2400000
     }
   },
   "experience": {
-    "similar_orders_count": 9
+    "years_in_desktop_business": 12,
+    "cfti_supply_orders": 4
   },
   "emd": {
     "status": "paid",
-    "amount_inr": 24000,
-    "transaction_ref": "EWZ-TXN-001"
+    "amount_inr": 17600,
+    "transaction_ref": "DD-001-2019"
   },
-  "local_content_percent": 60,
-  "supplier_class": "class_I",
   "documents": {
     "audited_financial_statements": true,
     "ca_certificate": true,
     "purchase_orders": true,
-    "user_certificates": true,
-    "digitally_signed_tender": true,
-    "blacklisting_declaration": true,
-    "mii_self_declaration": true,
+    "performance_certificate": true,
+    "incorporation_certificate": true,
+    "oem_authorization": true,
+    "signed_tender_copy": true,
+    "compliance_statement": true,
+    "page_declaration": true,
     "msme_certificate": false,
     "startup_recognition_certificate": false
   },

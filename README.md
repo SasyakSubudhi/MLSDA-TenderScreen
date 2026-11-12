@@ -17,8 +17,9 @@ cited justification to one of:
 It **never qualifies or rejects a bid**. It produces a screening finding with
 evidence; the Tender Committee decides.
 
-Corpus: the closed IIT Palakkad tender TENDER/2024-25/370 (desktop
-computers), the Department of Expenditure OMs of 25-07-2016 and 20-09-2016 on
+Corpus: the closed IIT Palakkad tender **IITPKD/AR/RS/053/2018-19**
+(desktop computers; published on the Central Public Procurement Portal, closed
+22-04-2019), the Department of Expenditure OMs of 25-07-2016 and 20-09-2016 on
 relaxing prior turnover / prior experience for Startups and MSEs, and the
 procurement chapter of the General Financial Rules 2017 (see
 [corpus/manifest.json](corpus/manifest.json)).
@@ -76,22 +77,37 @@ curl -s localhost:8000/v1/screenings/<run_id>/trace    # full reconstruction of 
 
 By default the model is the built-in `llm-stub` (OpenAI-compatible, fixed
 responses after a realistic delay) so the system works offline and load tests
-measure our system, not a provider's rate limit. To use a free-tier provider,
-create a file called `.env` (it is git-ignored) with your provider's
-OpenAI-compatible endpoint, key and model id:
+measure our system, not a provider's rate limit. Two ways to use a real model
+- configuration only, nothing in the code changes. Create a file called
+`.env` (git-ignored) next to `.env.example`:
+
+**A. A free-tier provider** (any OpenAI-compatible endpoint):
 
 ```
 LLM_PROVIDER_NAME=<provider>
 LLM_BASE_URL=<https://.../v1>
 LLM_API_KEY=<your key>
-LLM_MODEL=<model id>
-LLM_PRICE_INPUT_PER_1M=<list price>
-LLM_PRICE_OUTPUT_PER_1M=<list price>
+LLM_MODEL=<model id from the provider's model list>
 ```
 
-then `docker compose up -d`. Every option is documented in
-[.env.example](.env.example); values in `.env` override it. No credentials,
-endpoints or model identifiers are in the code.
+**B. A local open model, no key needed** (runs in the `ollama` container):
+
+```
+LLM_PROVIDER_NAME=ollama-local
+LLM_BASE_URL=http://ollama:11434/v1
+LLM_MODEL=tenderscreen-local
+OLLAMA_MODEL=<model id from the Ollama library, e.g. a 1-3B instruct model>
+LLM_PROVIDER_TIMEOUT_S=120
+LLM_CALL_TIMEOUT_S=150
+RUN_TIMEOUT_S=600
+```
+
+then `docker compose --profile local-llm up -d`. The first start downloads
+the model and registers it as `tenderscreen-local` with a 4,096-token context.
+On a laptop CPU a run takes a few minutes, so use it to show a real model, not
+for load tests. Every option is documented in [.env.example](.env.example);
+values in `.env` override it. No credentials, endpoints of external services
+or model identifiers are stored in the repository.
 
 ---
 
@@ -117,8 +133,8 @@ flowchart LR
 ```
 
 1. **Validate at the boundary** - schema, ranges, enumerations and cross-field
-   rules (e.g. a startup must give a DPIIT number; class-I suppliers need
-   >= 50% local content), prompt-injection and toxicity checks on every
+   rules (e.g. a startup must give a DPIIT number; years in business cannot
+   exceed the company's age), prompt-injection and toxicity checks on every
    free-text field. Failures are quarantined with field-level errors and **no
    agent run starts**.
 2. **Queue** - a run id is returned at once (HTTP 202); the client polls.
@@ -139,14 +155,21 @@ Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
 
 ### The difficult case (section 4.1)
 
-A recognised startup bids with average turnover Rs.8,80,000 against the
-tender's Rs.24,00,000 threshold ([examples/startup_low_turnover.json](examples/startup_low_turnover.json)).
-Read alone, tender clause 3(h)(2) says unmet. DoE OM 20-09-2016 para 2 says
-ministries "have to ensure" prior-turnover criteria are relaxed for startups,
-and GFR 2017 Rule 173(i) says they may be relaxed "subject to ... making
-suitable provisions in the bidding document" - which this tender does not do.
+A recognised startup bids with turnover of Rs.1,50,000 / 3,20,000 / 4,60,000
+against the tender's "turnover of at least Rs.5 Lakh during each of the last
+three financial years" (Annexure-II 7) -
+[examples/startup_low_turnover.json](examples/startup_low_turnover.json).
+Read alone, the tender says unmet. DoE OM 20-09-2016 para 2 says ministries
+"have to ensure" prior-turnover criteria are relaxed for startups, and GFR
+2017 Rule 173(i) says they may be relaxed "subject to ... making suitable
+provisions in the bidding document" - which this tender does not do.
 TenderScreen returns **escalate to human** with both sides cited, not a
-decision. Evaluation scenario `S02` is the reference answer.
+decision. Evaluation scenario `S02` is the reference answer
+([docs/EVALUATION_1.md](docs/EVALUATION_1.md) lists the passages and values).
+
+A second conflict of the same kind: an MSE that claims EMD exemption. The
+tender demands EMD from every bidder; GFR 2017 Rule 170(i) exempts MSEs from
+bid security. Also escalated with both cited (scenario `S11`).
 
 ---
 
@@ -154,35 +177,38 @@ decision. Evaluation scenario `S02` is the reference answer.
 
 | Path | What | Part |
 |---|---|---|
-| `docker-compose.yml`, `Dockerfile`, `.env.example` | 10 services, one image, runtime config | 1 |
+| `docker-compose.yml`, `Dockerfile`, `.env.example` | 11 services (+ optional load-test and local-model profiles), one image, runtime config | 1 |
 | `tenderscreen/common/` | config, JSON logging, tracing, Redis streams queue, run store | 1 |
 | `tenderscreen/api/` | FastAPI service, data contract, rate limiter, web client | 1 |
 | `contracts/` | published JSON schemas | 1 |
 | `corpus/` | the four official PDFs, manifest with hashes, curated clause registry | 2 |
 | `tenderscreen/retrieval/` | ingestion pipeline, normalisation, embeddings cache, FAISS+BM25 store | 2 |
-| `eval/scenarios.json`, `tenderscreen/evaluation/` | 26-scenario evaluation set, metrics, batch runner | 2 |
+| `eval/scenarios.json`, `tenderscreen/evaluation/` | 28-scenario evaluation set, metrics, batch runner, TruLens recording | 2 |
 | `tenderscreen/agents/` | research agent, verifier agent, tools, rule engine, guardrails, workers | 3 |
 | `prompts/` | versioned prompt templates v1 and v2 | 3 |
-| `tenderscreen/llm/` | LLM gateway, circuit breaker, client, stub provider | 4 |
+| `tenderscreen/llm/` | LLM gateway, circuit breaker, client, stub provider, per-container resource exporter | 4 |
 | `observability/` | Prometheus, Grafana provisioning and dashboard | 4 |
 | `loadtest/` | Locust file and scaling matrix | 4 |
 | `docs/` | report, architecture, runbook, incident log, SLO, load test, demo | all |
-| `tests/` | 44 unit/integration tests (no Docker needed) | all |
+| `tests/` | 51 unit/integration tests (no Docker needed) | all |
 
 ### Who built what
 
 | Part | Owner (GitHub) | Scope |
 |---|---|---|
 | 1 - Platform, API and contracts | SasyakSubudhi | Compose/Dockerfile/config, shared runtime (`common/`), FastAPI service, data contract and quarantine, rate limiting, run cache, web client, architecture and demo docs |
-| 2 - Corpus, retrieval and evaluation | vasun26shriya | corpus and clause registry, ingestion pipeline, embeddings cache, FAISS+BM25 search, 26-scenario evaluation set and metrics |
+| 2 - Corpus, retrieval and evaluation | vasun26shriya | corpus and clause registry, ingestion pipeline, embeddings cache, FAISS+BM25 search, 28-scenario evaluation set, metrics and TruLens recording |
 | 3 - Agents and guardrails | sujan1001 | research agent, verifier agent, tools, rule engine, guardrails, versioned prompts, queue workers |
-| 4 - LLM ops, observability and load | yasho-26singh | LLM gateway (breaker, retries, cache, budget, cost), stub provider, Prometheus/Grafana, Locust load tests, runbook, incident log, report |
+| 4 - LLM ops, observability and load | yasho-26singh | LLM gateway (breaker, retries, cache, budget, cost), stub provider, resource exporter, Prometheus/Grafana, Locust load tests, runbook, incident log, report |
 
 ## 4. Commands
 
 ```bash
-# evaluation batch (26 scenarios) and prompt comparison - inside the stack
+# evaluation batch (28 scenarios) and prompt comparison - inside the stack
 docker compose exec agent-worker python -m tenderscreen.evaluation.run --compare v1 v2
+# the same set recorded and scored with TruLens (leaderboard of versions)
+docker compose exec agent-worker python -m tenderscreen.evaluation.trulens_eval --app-version v2
+docker compose exec agent-worker python -m tenderscreen.evaluation.trulens_eval --app-version v1 --prompt-version v1
 
 # rebuild / update the index (idempotent; only changed chunks are embedded)
 docker compose run --rm indexer

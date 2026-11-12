@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "bid_id": "BID-053-004",
+  "tender_id": "IITPKD/AR/RS/053/2018-19",
+  "bidder": {
+    "legal_name": "Palakkad Microtech",
+    "declared_category": "mse",
+    "country_of_incorporation": "IN",
+    "date_of_incorporation": "2012-08-10",
+    "is_oem": false,
+    "registered_office_state": "Kerala",
+    "service_centre_states": [
+      "Kerala",
+      "Tamil Nadu"
+    ],
+    "udyam_registration": "UDYAM-KL-07-0012345"
+  },
+  "financials": {
+    "annual_turnover_inr": {
+      "2015-16": 900000,
+      "2016-17": 1100000,
+      "2017-18": 1300000
+    }
+  },
+  "experience": {
+    "years_in_desktop_business": 6,
+    "cfti_supply_orders": 2
+  },
+  "emd": {
+    "status": "exemption_claimed",
+    "amount_inr": 0
+  },
+  "documents": {
+    "audited_financial_statements": true,
+    "ca_certificate": true,
+    "purchase_orders": true,
+    "performance_certificate": true,
+    "incorporation_certificate": true,
+    "oem_authorization": true,
+    "signed_tender_copy": true,
+    "compliance_statement": true,
+    "page_declaration": true,
+    "msme_certificate": true,
+    "startup_recognition_certificate": false
+  },
+  "remarks": ""
+}

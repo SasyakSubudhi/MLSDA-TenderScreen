@@ -14,7 +14,8 @@ os.environ.update({
     "EXAMPLES_DIR": os.path.join(ROOT, "examples"),
     "INDEX_DIR": os.path.join(_TMP, "index"),
     "MODEL_CACHE_DIR": os.path.join(_TMP, "models"),
-    "EMBEDDING_MODEL": "",          # offline hash embeddings keep tests fast and hermetic
+    "EMBEDDING_MODEL": "",
+    "EMBEDDING_BACKEND": "hash",    # offline hash embeddings keep tests fast and hermetic
     "EMBEDDING_FALLBACK": "hash",
     "LLM_PRICE_INPUT_PER_1M": "0.10",
     "LLM_PRICE_OUTPUT_PER_1M": "0.40",

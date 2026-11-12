@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "bid_id": "BID-053-006",
+  "tender_id": "IITPKD/AR/RS/053/2018-19",
+  "bidder": {
+    "legal_name": "Pune Desktop Works Pvt Ltd",
+    "declared_category": "large_enterprise",
+    "country_of_incorporation": "IN",
+    "date_of_incorporation": "2008-04-01",
+    "is_oem": false,
+    "registered_office_state": "Maharashtra",
+    "service_centre_states": [
+      "Maharashtra",
+      "Gujarat"
+    ]
+  },
+  "financials": {
+    "annual_turnover_inr": {
+      "2015-16": 2000000,
+      "2016-17": 2200000,
+      "2017-18": 2500000
+    }
+  },
+  "experience": {
+    "years_in_desktop_business": 10,
+    "cfti_supply_orders": 6
+  },
+  "emd": {
+    "status": "paid",
+    "amount_inr": 17600,
+    "transaction_ref": "DD-006-2019"
+  },
+  "documents": {
+    "audited_financial_statements": true,
+    "ca_certificate": true,
+    "purchase_orders": true,
+    "performance_certificate": true,
+    "incorporation_certificate": true,
+    "oem_authorization": true,
+    "signed_tender_copy": true,
+    "compliance_statement": true,
+    "page_declaration": true,
+    "msme_certificate": false,
+    "startup_recognition_certificate": false
+  },
+  "remarks": ""
+}

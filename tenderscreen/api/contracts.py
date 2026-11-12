@@ -17,10 +17,18 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from ..agents.conditions import FINANCIAL_YEARS, TENDER_CLOSING_DATE
+from ..agents.conditions import FINANCIAL_YEARS, TENDER_CLOSING_DATE, TENDER_ID
 
 SCHEMA_VERSION = "1.0"
-SUPPORTED_TENDERS = ("TENDER/2024-25/370",)
+SUPPORTED_TENDERS = (TENDER_ID,)
+INDIAN_STATES = (
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+    "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+    "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+    "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry",
+    "Outside India")
+State = Literal[INDIAN_STATES]  # type: ignore[valid-type]
 
 
 class _Strict(BaseModel):
@@ -32,7 +40,9 @@ class Bidder(_Strict):
     declared_category: Literal["large_enterprise", "mse", "startup", "consortium", "foreign", "not_stated"]
     country_of_incorporation: str = Field(pattern=r"^[A-Z]{2}$", description="ISO 3166-1 alpha-2")
     date_of_incorporation: date
-    manufactures_own_goods: bool = Field(description="False if the bidder is trading goods made by others")
+    is_oem: bool = Field(description="True if the bidder is the Original Equipment Manufacturer")
+    registered_office_state: State
+    service_centre_states: list[State] = Field(default_factory=list, max_length=36)
     udyam_registration: Optional[str] = Field(None, pattern=r"^UDYAM-[A-Z]{2}-\d{2}-\d{7}$")
     nsic_registration: Optional[str] = Field(None, pattern=r"^[A-Za-z0-9/-]{4,40}$")
     dpiit_recognition: Optional[str] = Field(None, pattern=r"^DIPP\d{3,8}$")
@@ -41,11 +51,12 @@ class Bidder(_Strict):
 
 class Financials(_Strict):
     annual_turnover_inr: dict[str, float] = Field(
-        description="Audited turnover in INR for each of the five financial years 2019-20 .. 2023-24")
+        description="Audited turnover in INR for each of the financial years 2015-16, 2016-17, 2017-18")
 
 
 class Experience(_Strict):
-    similar_orders_count: int = Field(ge=0, le=10000, description="Desktop-computer orders from CFTIs/Govt, last 5 FYs")
+    years_in_desktop_business: int = Field(ge=0, le=100, description="Years in the business of desktop computers")
+    cfti_supply_orders: int = Field(ge=0, le=10000, description="Purchase orders for desktops supplied to CFTIs, last 5 years")
 
 
 class Emd(_Strict):
@@ -58,10 +69,12 @@ class Documents(_Strict):
     audited_financial_statements: bool = False
     ca_certificate: bool = False
     purchase_orders: bool = False
-    user_certificates: bool = False
-    digitally_signed_tender: bool = False
-    blacklisting_declaration: bool = False
-    mii_self_declaration: bool = False
+    performance_certificate: bool = False
+    incorporation_certificate: bool = False
+    oem_authorization: bool = False
+    signed_tender_copy: bool = False
+    compliance_statement: bool = False
+    page_declaration: bool = False
     msme_certificate: bool = False
     startup_recognition_certificate: bool = False
 
@@ -69,27 +82,25 @@ class Documents(_Strict):
 class BidSummary(_Strict):
     schema_version: Literal["1.0"]
     bid_id: str = Field(pattern=r"^[A-Za-z0-9._-]{3,40}$")
-    tender_id: Literal["TENDER/2024-25/370"]
+    tender_id: Literal["IITPKD/AR/RS/053/2018-19"]
     bidder: Bidder
     financials: Financials
     experience: Experience
     emd: Emd
-    local_content_percent: float = Field(ge=0, le=100)
-    supplier_class: Literal["class_I", "class_II", "non_local"]
     documents: Documents
     remarks: Optional[str] = Field(None, max_length=2000, description="Free text from the bidder (untrusted)")
 
 
 CROSS_FIELD_RULES = [
-    "financials.annual_turnover_inr must contain exactly the five years 2019-20 .. 2023-24, each 0 .. 1e13",
-    "bidder.date_of_incorporation must be after 1850-01-01 and not after the tender closing date (2025-01-07)",
+    "financials.annual_turnover_inr must contain exactly the years 2015-16, 2016-17, 2017-18, each 0 .. 1e13",
+    "bidder.date_of_incorporation must be after 1850-01-01 and not after the tender closing date (2019-04-22)",
+    "experience.years_in_desktop_business cannot exceed the bidder's age at the closing date (rounded up)",
     "declared_category=startup requires bidder.dpiit_recognition",
     "declared_category=mse requires bidder.udyam_registration or bidder.nsic_registration",
     "declared_category=consortium requires at least two consortium_members; other categories must have none",
     "declared_category=foreign if and only if country_of_incorporation is not IN",
+    "registered_office_state 'Outside India' if and only if country_of_incorporation is not IN",
     "emd.status=paid requires emd.amount_inr > 0 and emd.transaction_ref; other statuses require amount_inr = 0",
-    "supplier_class class_I requires local_content_percent >= 50; class_II requires 20 <= value < 50; "
-    "non_local requires value < 20 (Make in India Order 2017, as revised 16-09-2020)",
 ]
 
 
@@ -110,7 +121,7 @@ def cross_field_errors(b: BidSummary) -> list[dict]:
                          "message": "turnover must be between 0 and 1e13 INR"})
     inc = b.bidder.date_of_incorporation
     if inc < date(1850, 1, 1) or inc > TENDER_CLOSING_DATE:
-        err("bidder.date_of_incorporation", "must be between 1850-01-01 and the tender closing date 2025-01-07")
+        err("bidder.date_of_incorporation", "must be between 1850-01-01 and the tender closing date 2019-04-22")
     cat = b.bidder.declared_category
     if cat == "startup" and not b.bidder.dpiit_recognition:
         err("bidder.dpiit_recognition", "required when declared_category is startup")
@@ -129,9 +140,13 @@ def cross_field_errors(b: BidSummary) -> list[dict]:
             err("emd.transaction_ref", "required when emd.status is paid")
     elif b.emd.amount_inr != 0:
         err("emd.amount_inr", "must be 0 unless emd.status is paid")
-    lc, cls = b.local_content_percent, b.supplier_class
-    if (cls == "class_I" and lc < 50) or (cls == "class_II" and not 20 <= lc < 50) or (cls == "non_local" and lc >= 20):
-        err("supplier_class", f"{cls} is inconsistent with local_content_percent={lc:g}")
+    age_years = (TENDER_CLOSING_DATE - inc).days / 365.25
+    if b.experience.years_in_desktop_business > int(age_years) + 1:
+        err("experience.years_in_desktop_business",
+            f"{b.experience.years_in_desktop_business} years in business but incorporated only {age_years:.1f} years "
+            "before the closing date")
+    if (b.bidder.registered_office_state == "Outside India") != (b.bidder.country_of_incorporation != "IN"):
+        err("bidder.registered_office_state", "'Outside India' must match a non-IN country of incorporation")
     return errs
 
 

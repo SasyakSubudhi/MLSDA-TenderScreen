@@ -116,6 +116,16 @@ services:
       timeout: 3s
       retries: 12
 
+  # CPU / memory / uptime / restarts of every container in this project (reads the Docker API read-only)
+  resource-exporter:
+    <<: *app
+    command: ["python", "-m", "tenderscreen.llm.resource_exporter"]
+    user: "0"   # the Docker socket is owned by root; mounted read-only
+    environment:
+      SERVICE_NAME: resource-exporter
+      METRICS_PORT: "9103"
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock:ro"]
+
   prometheus:
     image: prom/prometheus:v2.55.1
     command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=7d"]
@@ -152,6 +162,43 @@ services:
     restart: unless-stopped
     networks: [tenderscreen]
 
+  # optional real model on your own machine (no API key needed):
+  #   put LLM_BASE_URL=http://ollama:11434/v1, LLM_MODEL=tenderscreen-local and OLLAMA_MODEL=<model id> in .env, then
+  #   docker compose --profile local-llm up -d
+  ollama:
+    image: ollama/ollama:0.5.7
+    profiles: ["local-llm"]
+    environment:
+      OLLAMA_KEEP_ALIVE: 24h
+      OLLAMA_NUM_PARALLEL: "2"
+    volumes: [ollama-models:/root/.ollama]
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    networks: [tenderscreen]
+
+  # one-shot: downloads the model named in OLLAMA_MODEL (from .env) into the ollama volume
+  ollama-pull:
+    image: ollama/ollama:0.5.7
+    profiles: ["local-llm"]
+    env_file:
+      - path: .env.example
+        required: true
+      - path: .env
+        required: false
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    # pulls OLLAMA_MODEL and registers it as "tenderscreen-local" with a 4096-token context
+    # (the default 2048 truncates the drafting prompt - incident INC-10)
+    entrypoint: ["/bin/sh", "-c", "test -n \"$$OLLAMA_MODEL\" || { echo 'set OLLAMA_MODEL in .env'; exit 1; }; ollama pull \"$$OLLAMA_MODEL\" && printf 'FROM %s\\nPARAMETER num_ctx 4096\\nPARAMETER temperature 0\\n' \"$$OLLAMA_MODEL\" > /tmp/Modelfile && ollama create tenderscreen-local -f /tmp/Modelfile"]
+    depends_on:
+      ollama: {condition: service_healthy}
+    restart: "no"
+    networks: [tenderscreen]
+
   # load generator - only started on demand:
   #   docker compose --profile loadtest run --rm locust ...
   locust:
@@ -168,6 +215,7 @@ volumes:
   index-data:
   prometheus-data:
   grafana-data:
+  ollama-models:
 
 networks:
   tenderscreen:

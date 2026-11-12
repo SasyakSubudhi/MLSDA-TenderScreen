@@ -6,3 +6,5 @@ data/
 .venv/
 venv/
 *.zip
+.env.before-*
+eval/results/trulens.sqlite

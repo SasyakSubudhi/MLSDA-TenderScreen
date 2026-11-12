@@ -52,7 +52,7 @@ FEEDBACK = Counter("feedback_total", "Feedback received", ["satisfactory"])
 QUEUE_DEPTH = Gauge("api_queue_depth", "Messages in stream", ["stream"])
 
 app = FastAPI(title="TenderScreen - Bid Compliance Screening API", version="1.0",
-              description="Screens bid summaries for TENDER/2024-25/370 and returns a cited screening finding. "
+              description="Screens bid summaries for tender IITPKD/AR/RS/053/2018-19 and returns a cited screening finding. "
                           "It never qualifies or rejects a bid: the Tender Committee decides.")
 try:
     from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor

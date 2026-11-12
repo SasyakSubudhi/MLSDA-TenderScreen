@@ -1,40 +1,44 @@
 {
   "schema_version": "1.0",
-  "bid_id": "BID-370-008",
+  "bid_id": "BID-053-009",
   "tender_id": "TENDER/2099-00/001",
   "bidder": {
     "legal_name": "Broken Data Co",
     "declared_category": "startup",
     "country_of_incorporation": "IN",
     "date_of_incorporation": "2030-01-01",
-    "manufactures_own_goods": true
+    "is_oem": false,
+    "registered_office_state": "Atlantis",
+    "service_centre_states": [
+      "Kerala",
+      "Tamil Nadu"
+    ]
   },
   "financials": {
     "annual_turnover_inr": {
-      "2019-20": -5,
-      "2020-21": 0,
-      "2021-22": 100000.0,
-      "2022-23": 100000.0
+      "2015-16": -5,
+      "2016-17": 100000
     }
   },
   "experience": {
-    "similar_orders_count": 3
+    "years_in_desktop_business": 12,
+    "cfti_supply_orders": 1
   },
   "emd": {
     "status": "paid",
     "amount_inr": 0,
-    "transaction_ref": "EWZ-TXN-008"
+    "transaction_ref": "DD-009-2019"
   },
-  "local_content_percent": 150,
-  "supplier_class": "class_II",
   "documents": {
     "audited_financial_statements": true,
     "ca_certificate": true,
     "purchase_orders": true,
-    "user_certificates": true,
-    "digitally_signed_tender": true,
-    "blacklisting_declaration": true,
-    "mii_self_declaration": true,
+    "performance_certificate": true,
+    "incorporation_certificate": true,
+    "oem_authorization": true,
+    "signed_tender_copy": true,
+    "compliance_statement": true,
+    "page_declaration": true,
     "msme_certificate": false,
     "startup_recognition_certificate": false
   },

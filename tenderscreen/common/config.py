@@ -50,6 +50,7 @@ class Settings:
 
     # embeddings / retrieval
     embedding_model: str = field(default_factory=lambda: _env("EMBEDDING_MODEL", ""))
+    embedding_backend: str = field(default_factory=lambda: _env("EMBEDDING_BACKEND", "local"))
     embedding_fallback: str = field(default_factory=lambda: _env("EMBEDDING_FALLBACK", "hash"))
     chunk_size: int = field(default_factory=lambda: _int("CHUNK_SIZE", 900))
     chunk_overlap: int = field(default_factory=lambda: _int("CHUNK_OVERLAP", 150))

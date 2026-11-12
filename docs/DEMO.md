@@ -35,7 +35,10 @@ row: V2 *citations_resolve* passed = every quote was found verbatim in a
 passage retrieved in this run.
 
 Also show **large low turnover reject** -> *Recommend rejection (cited
-condition)* citing tender 3(h)(2) - "Rs.24,00,000".
+condition)* citing Annexure-II 7 - "turnover of at least Rs.5 Lakh during each
+of the last three financial years" (the bidder had Rs.4,10,000 in 2016-17) -
+and **outside region reject** (registered office in Maharashtra; Annexure-II
+4-5 requires Karnataka/Tamil Nadu/Telangana/Andhra Pradesh or Kerala).
 
 ### 3. One run traced end to end
 
@@ -51,7 +54,7 @@ one trace spans `api -> research-agent -> llm-gateway -> verifier-agent`.
 ### 4. A malformed request rejected and quarantined - no agent run started
 
 Web client -> **malformed** -> *Screen this bid*. Shown: HTTP 422,
-quarantine id, field-level errors (unsupported tender id, local content 150%),
+quarantine id, field-level errors (unsupported tender id, unknown state "Atlantis"),
 and **"No agent run was started."** Evidence:
 ```powershell
 curl.exe -s localhost:8000/v1/quarantine          # the stored record, agent_run_started: false
@@ -62,9 +65,9 @@ Grafana *Ingestion boundary* panel counts it under `contract_violation`.
 ### 5. A case the corpus cannot answer -> escalation, not a fabricated answer
 
 **consortium cannot answer**. The tender only says a consortium member may
-not bid twice (clause 1(c)); nothing in the tender or the rules says how
+not bid twice (clause 1.7); nothing in the tender or the rules says how
 members' turnover and experience combine. Result: **Escalate to Tender
-Committee**, reason *bidder category cannot be settled*, citing clause 1(c).
+Committee**, reason *bidder category cannot be settled*, citing clause 1.7.
 
 ### 6. Self-verification catching an unsupported answer, then a further search
 
@@ -121,10 +124,11 @@ Read the `E2E complete run` line (p50/p95 of whole runs). Grafana shows three
 
 ### 10. The section 4.1 case, handled correctly
 
-**startup low turnover** (DPIIT-recognised startup, average turnover
-Rs.8,80,000 vs Rs.24,00,000). Result: **Escalate to Tender Committee**.
-Turnover condition = **CONFLICT**, citing:
-* tender 3(h)(2), p.3 - "Should have an Average Annual Turnover of Rs.24,00,000/-..."
+**startup low turnover** (DPIIT-recognised startup, turnover Rs.1,50,000 /
+3,20,000 / 4,60,000 against Rs.5 Lakh required in each year). Result:
+**Escalate to Tender Committee**. Turnover condition = **CONFLICT**, citing:
+* tender Annexure-II 7, p.13 - "...proof of turnover of at least Rs.5 Lakh
+  during each of the last three financial years (2015-16, 2016-17 and 2017-18)."
 * DoE OM 20-09-2016 para 2, p.235 of the DPE compendium - "...have to ensure
   that criteria of prior turnover and prior experience for all Startups is
   relaxed subject to their meeting of quality and technical specification."
@@ -137,7 +141,12 @@ Next step stated: the committee decides whether the relaxation applies, since
 GFR 173(i) ties it to provisions in the bidding document. In the trace, show
 the agent *reflecting* on the tender clause, deriving the policy queries, and
 following the cross-reference to the July OM - none of which the request
-mentioned. This is evaluation scenario S02 (reference answer).
+mentioned. This is evaluation scenario S02 (reference answer; see
+[EVALUATION_1.md](EVALUATION_1.md)).
+
+Bonus: **mse emd exemption conflict** - the tender rejects bids without EMD
+(clause 5.3.1) while GFR Rule 170(i) obtains bid security from bidders
+"except Micro and Small Enterprises": escalated with both cited.
 
 ---
 

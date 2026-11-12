@@ -10,38 +10,40 @@ Machine-readable schemas: [contracts/bid_summary.schema.json](../contracts/bid_s
 |---|---|---|
 | `schema_version` | `"1.0"` | categorical |
 | `bid_id` | string `^[A-Za-z0-9._-]{3,40}$` | pattern |
-| `tender_id` | `"TENDER/2024-25/370"` | categorical (supported tenders) |
+| `tender_id` | `"IITPKD/AR/RS/053/2018-19"` | categorical (supported tenders) |
 | `bidder.legal_name` | string 2-200, **free text** | injection + toxicity scan |
 | `bidder.declared_category` | `large_enterprise` `mse` `startup` `consortium` `foreign` `not_stated` | categorical |
 | `bidder.country_of_incorporation` | ISO-2 `^[A-Z]{2}$` | pattern |
 | `bidder.date_of_incorporation` | date | cross-field (below) |
-| `bidder.manufactures_own_goods` | bool | - |
+| `bidder.is_oem` | bool (true if the bidder is the OEM) | - |
+| `bidder.registered_office_state` | one of the 36 states/UTs or `Outside India` | categorical |
+| `bidder.service_centre_states` | list of states/UTs, max 36 | categorical |
 | `bidder.udyam_registration` | `^UDYAM-[A-Z]{2}-\d{2}-\d{7}$` or null | pattern |
 | `bidder.nsic_registration` | `^[A-Za-z0-9/-]{4,40}$` or null | pattern, scanned |
 | `bidder.dpiit_recognition` | `^DIPP\d{3,8}$` or null | pattern |
 | `bidder.consortium_members` | list of strings, max 10, **free text** | scanned |
-| `financials.annual_turnover_inr` | object FY -> number | exactly 2019-20 .. 2023-24, each 0 .. 1e13 |
-| `experience.similar_orders_count` | int 0 .. 10000 | range |
+| `financials.annual_turnover_inr` | object FY -> number | exactly 2015-16, 2016-17, 2017-18, each 0 .. 1e13 |
+| `experience.years_in_desktop_business` | int 0 .. 100 | range, cross-field |
+| `experience.cfti_supply_orders` | int 0 .. 10000 | range |
 | `emd.status` | `paid` `exemption_claimed` `not_paid` | categorical |
 | `emd.amount_inr` | number 0 .. 1e9 | range |
 | `emd.transaction_ref` | `^[A-Za-z0-9-]{4,40}$` or null | pattern, scanned |
-| `local_content_percent` | number 0 .. 100 | range |
-| `supplier_class` | `class_I` `class_II` `non_local` | categorical |
-| `documents.*` | 9 booleans (audited statements, CA certificate, purchase orders, user certificates, digitally signed tender, blacklisting declaration, MII self declaration, MSME certificate, startup recognition certificate) | unknown keys rejected |
+| `documents.*` | 11 booleans (audited statements, CA certificate, purchase orders, performance certificate, incorporation certificate, OEM authorisation, signed tender copy, compliance statement, page declaration, MSME certificate, startup recognition certificate) | unknown keys rejected |
 | `remarks` | string <= 2000 or null, **free text, untrusted** | injection + toxicity scan |
 
 Unknown fields anywhere are rejected (`extra=forbid`).
 
 **Cross-field rules**
 
-1. Turnover has exactly the five financial years 2019-20 .. 2023-24.
-2. Incorporation date between 1850-01-01 and the tender closing date 07-01-2025.
-3. `startup` requires `dpiit_recognition`.
-4. `mse` requires `udyam_registration` or `nsic_registration`.
-5. `consortium` requires at least two members; other categories none.
-6. `foreign` if and only if the country is not `IN`.
-7. `emd.status = paid` requires `amount_inr > 0` and `transaction_ref`; other statuses `amount_inr = 0`.
-8. `class_I` requires local content >= 50%, `class_II` 20 .. < 50%, `non_local` < 20%.
+1. Turnover has exactly the three financial years 2015-16, 2016-17, 2017-18.
+2. Incorporation date between 1850-01-01 and the tender closing date 22-04-2019.
+3. Years in the desktop business cannot exceed the bidder's age at closing (rounded up).
+4. `startup` requires `dpiit_recognition`.
+5. `mse` requires `udyam_registration` or `nsic_registration`.
+6. `consortium` requires at least two members; other categories none.
+7. `foreign` if and only if the country is not `IN`.
+8. `registered_office_state = "Outside India"` if and only if the country is not `IN`.
+9. `emd.status = paid` requires `amount_inr > 0` and `transaction_ref`; other statuses `amount_inr = 0`.
 
 **Responses**
 

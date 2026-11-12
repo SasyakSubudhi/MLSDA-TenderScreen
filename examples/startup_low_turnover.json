@@ -1,42 +1,46 @@
 {
   "schema_version": "1.0",
-  "bid_id": "BID-370-002",
-  "tender_id": "TENDER/2024-25/370",
+  "bid_id": "BID-053-002",
+  "tender_id": "IITPKD/AR/RS/053/2018-19",
   "bidder": {
     "legal_name": "Nimbus Compute Pvt Ltd",
     "declared_category": "startup",
     "country_of_incorporation": "IN",
-    "date_of_incorporation": "2021-04-12",
-    "manufactures_own_goods": true,
-    "dpiit_recognition": "DIPP123456"
+    "date_of_incorporation": "2015-05-12",
+    "is_oem": false,
+    "registered_office_state": "Kerala",
+    "service_centre_states": [
+      "Kerala",
+      "Tamil Nadu"
+    ],
+    "dpiit_recognition": "DIPP12345"
   },
   "financials": {
     "annual_turnover_inr": {
-      "2019-20": 0,
-      "2020-21": 0,
-      "2021-22": 800000.0,
-      "2022-23": 1500000.0,
-      "2023-24": 2100000.0
+      "2015-16": 150000,
+      "2016-17": 320000,
+      "2017-18": 460000
     }
   },
   "experience": {
-    "similar_orders_count": 6
+    "years_in_desktop_business": 3,
+    "cfti_supply_orders": 2
   },
   "emd": {
     "status": "paid",
-    "amount_inr": 24000,
-    "transaction_ref": "EWZ-TXN-002"
+    "amount_inr": 17600,
+    "transaction_ref": "DD-002-2019"
   },
-  "local_content_percent": 60,
-  "supplier_class": "class_I",
   "documents": {
     "audited_financial_statements": true,
     "ca_certificate": true,
     "purchase_orders": true,
-    "user_certificates": true,
-    "digitally_signed_tender": true,
-    "blacklisting_declaration": true,
-    "mii_self_declaration": true,
+    "performance_certificate": true,
+    "incorporation_certificate": true,
+    "oem_authorization": true,
+    "signed_tender_copy": true,
+    "compliance_statement": true,
+    "page_declaration": true,
     "msme_certificate": false,
     "startup_recognition_certificate": true
   },

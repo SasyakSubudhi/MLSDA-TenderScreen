@@ -8,7 +8,8 @@ from tenderscreen.api.contracts import validate_bid
 
 
 def test_valid_examples_pass_the_contract(example):
-    for name in ("ordinary_pass", "startup_low_turnover", "mse_emd_exempt_pass", "consortium_cannot_answer"):
+    for name in ("ordinary_pass", "startup_low_turnover", "mse_emd_exemption_conflict", "consortium_cannot_answer",
+                 "outside_region_reject"):
         bid, errors = validate_bid(example(name))
         assert bid is not None and errors == [], (name, errors)
 
@@ -17,17 +18,18 @@ def test_malformed_bid_gets_field_level_errors(example):
     bid, errors = validate_bid(example("malformed"))
     assert bid is None
     fields = {e["field"] for e in errors}
-    assert "tender_id" in fields and "local_content_percent" in fields
+    assert "tender_id" in fields and "bidder.registered_office_state" in fields
     assert {e["error"] for e in errors} <= {"schema", "range", "categorical", "type", "cross_field"}
 
 
 @pytest.mark.parametrize("mutate, field", [
-    (lambda b: b["financials"]["annual_turnover_inr"].pop("2023-24"), "financials.annual_turnover_inr"),
+    (lambda b: b["financials"]["annual_turnover_inr"].pop("2017-18"), "financials.annual_turnover_inr"),
     (lambda b: b["bidder"].update(declared_category="startup", dpiit_recognition=None), "bidder.dpiit_recognition"),
     (lambda b: b["bidder"].update(date_of_incorporation="2026-01-01"), "bidder.date_of_incorporation"),
     (lambda b: b["emd"].update(amount_inr=0), "emd.amount_inr"),
-    (lambda b: b.update(supplier_class="class_I", local_content_percent=30), "supplier_class"),
+    (lambda b: b["experience"].update(years_in_desktop_business=40), "experience.years_in_desktop_business"),
     (lambda b: b["bidder"].update(country_of_incorporation="SG"), "bidder.country_of_incorporation"),
+    (lambda b: b["bidder"].update(registered_office_state="Outside India"), "bidder.registered_office_state"),
     (lambda b: b["bidder"].update(consortium_members=["A Ltd", "B Ltd"]), "bidder.consortium_members"),
 ])
 def test_cross_field_rules(example, mutate, field):

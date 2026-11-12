@@ -1,6 +1,7 @@
 # Architecture and deployment boundaries
 
 Each box with a heavy border is a separate container (deployment boundary).
+A rendered version is in [img/architecture.png](img/architecture.png).
 
 ```mermaid
 flowchart TB
@@ -56,7 +57,7 @@ flowchart TB
   api & ra & va & gw -. OTLP traces .-> jae
 ```
 
-## Services (10)
+## Services (11, plus optional ones)
 
 | Service | Role | Scales? |
 |---|---|---|
@@ -67,8 +68,10 @@ flowchart TB
 | `llm-stub` | stand-in provider for demos and load tests | 1 |
 | `indexer` | one-shot ingestion pipeline, exits 0 | - |
 | `redis` | streams queue, run store, caches, limiter | 1 |
+| `resource-exporter` | CPU, memory, uptime and restarts of **every** container (Docker API, read-only socket) | 1 |
 | `prometheus`, `grafana`, `jaeger` | metrics, dashboard, traces | 1 |
 | `locust` | load generator (profile `loadtest`, on demand) | - |
+| `ollama`, `ollama-pull` | optional real model on the same machine, no key (profile `local-llm`) | - |
 
 ## Why the boundaries are where they are
 
@@ -82,6 +85,7 @@ flowchart TB
 | **indexer** one-shot | *Resource profile and independent release.* Ingestion runs once per corpus change, not per request; its output is a volume the workers read. Re-indexing does not restart the API, and workers pick up a new index automatically (`meta.json` mtime). |
 | **redis** | single small stateful service; everything else is stateless and can be restarted freely. |
 | observability stack | standard images, no coupling to app releases. |
+| **resource-exporter** separate | *Least privilege.* It is the only container that touches the Docker socket (read-only); nothing else gets that access. |
 
 ## Failure behaviour
 

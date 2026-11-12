@@ -1,0 +1,46 @@
+flowchart TB
+  user([Purchase officer / web client / curl])
+  subgraph net[Docker Compose network - each box is a separate container]
+    direction TB
+    subgraph c_api[api]
+      api[FastAPI: contract validation, quarantine,<br/>guardrails, rate limit, run cache,<br/>status, trace, feedback, web UI]
+    end
+    subgraph c_redis[redis]
+      q[(stream:research / stream:verify<br/>run store, caches, budget)]
+    end
+    subgraph c_aw["agent-worker x N  (scaled)"]
+      ra[Research agent - LangGraph<br/>plan - act - reflect - assess<br/>tools: search_corpus, lookup_clause,<br/>lookup_bid_fields]
+      ix[(FAISS + BM25 index)]
+    end
+    subgraph c_vw[verifier-worker]
+      va[Verifier agent - LangGraph<br/>7 checks against retrieved text]
+    end
+    subgraph c_gw[llm-gateway]
+      gw[timeouts, retries + backoff,<br/>circuit breaker, cache,<br/>budget, tokens and cost]
+    end
+    subgraph c_stub[llm-stub]
+      stub[OpenAI-compatible stub]
+    end
+    subgraph c_idx[indexer - one-shot]
+      ing[read - parse - chunk - embed - index]
+    end
+    subgraph c_obs[prometheus, grafana, jaeger, resource-exporter]
+      obs[metrics, dashboard, traces,<br/>per-container CPU / memory / uptime]
+    end
+  end
+  prov[(free-tier provider or<br/>local Ollama - optional)]
+  user -->|HTTP| api
+  api -->|enqueue| q
+  q --> ra
+  ra -->|hand-off| q
+  q --> va
+  va -->|retry or final| q
+  ra --> gw
+  gw --> stub
+  gw -.config only.-> prov
+  ing --> ix
+  ra --- ix
+  api -.-> obs
+  ra -.-> obs
+  va -.-> obs
+  gw -.-> obs

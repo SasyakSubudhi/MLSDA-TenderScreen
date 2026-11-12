@@ -1,41 +1,44 @@
 {
   "schema_version": "1.0",
-  "bid_id": "BID-370-005",
-  "tender_id": "TENDER/2024-25/370",
+  "bid_id": "BID-053-005",
+  "tender_id": "IITPKD/AR/RS/053/2018-19",
   "bidder": {
     "legal_name": "Coimbatore Infotech Ltd",
     "declared_category": "large_enterprise",
     "country_of_incorporation": "IN",
     "date_of_incorporation": "2009-11-03",
-    "manufactures_own_goods": true
+    "is_oem": false,
+    "registered_office_state": "Tamil Nadu",
+    "service_centre_states": [
+      "Tamil Nadu"
+    ]
   },
   "financials": {
     "annual_turnover_inr": {
-      "2019-20": 4000000.0,
-      "2020-21": 4200000.0,
-      "2021-22": 4500000.0,
-      "2022-23": 4700000.0,
-      "2023-24": 5000000.0
+      "2015-16": 1500000,
+      "2016-17": 1600000,
+      "2017-18": 1700000
     }
   },
   "experience": {
-    "similar_orders_count": 8
+    "years_in_desktop_business": 9,
+    "cfti_supply_orders": 5
   },
   "emd": {
     "status": "paid",
-    "amount_inr": 24000,
-    "transaction_ref": "EWZ-TXN-005"
+    "amount_inr": 17600,
+    "transaction_ref": "DD-005-2019"
   },
-  "local_content_percent": 60,
-  "supplier_class": "class_I",
   "documents": {
     "audited_financial_statements": true,
     "ca_certificate": false,
     "purchase_orders": true,
-    "user_certificates": true,
-    "digitally_signed_tender": true,
-    "blacklisting_declaration": true,
-    "mii_self_declaration": false,
+    "performance_certificate": true,
+    "incorporation_certificate": true,
+    "oem_authorization": true,
+    "signed_tender_copy": true,
+    "compliance_statement": true,
+    "page_declaration": false,
     "msme_certificate": false,
     "startup_recognition_certificate": false
   },
