@@ -51,7 +51,7 @@ echo.
 docker compose --profile loadtest run --rm --entrypoint python locust /mnt/locust/summarize.py table
 rem restore the normal configuration
 if exist .env.before-loadtest (copy /y .env.before-loadtest .env >nul & del .env.before-loadtest) else (del .env)
-docker compose up -d --scale agent-worker=1
+docker compose up -d
 echo.
 echo DONE. Results are in loadtest\results  (matrix.md, matrix.json, cache_experiment.md, Locust CSVs)
 pause

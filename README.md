@@ -205,10 +205,10 @@ bid security. Also escalated with both cited (scenario `S11`).
 
 ```bash
 # evaluation batch (28 scenarios) and prompt comparison - inside the stack
-docker compose exec agent-worker python -m tenderscreen.evaluation.run --compare v1 v2
+docker compose exec --index 1 agent-worker python -m tenderscreen.evaluation.run --compare v1 v2
 # the same set recorded and scored with TruLens (leaderboard of versions)
-docker compose exec agent-worker python -m tenderscreen.evaluation.trulens_eval --app-version v2
-docker compose exec agent-worker python -m tenderscreen.evaluation.trulens_eval --app-version v1 --prompt-version v1
+docker compose exec --index 1 agent-worker python -m tenderscreen.evaluation.trulens_eval --app-version v2
+docker compose exec --index 1 agent-worker python -m tenderscreen.evaluation.trulens_eval --app-version v1 --prompt-version v1
 
 # rebuild / update the index (idempotent; only changed chunks are embedded)
 docker compose run --rm indexer

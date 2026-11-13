@@ -89,6 +89,10 @@ services:
       SERVICE_NAME: agent-worker
       WORKER_ROLE: research
       METRICS_PORT: "9101"
+    # three research workers by default: the load test showed one worker misses the
+    # p95 <= 30 s SLO at 10 users (32 s) and three meet it (9.2 s) - see docs/LOADTEST.md
+    deploy:
+      replicas: ${AGENT_WORKERS:-3}
     volumes: [index-data:/data]
     depends_on:
       redis: {condition: service_healthy}

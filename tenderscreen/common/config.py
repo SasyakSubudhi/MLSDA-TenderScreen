@@ -70,6 +70,8 @@ class Settings:
     run_timeout_s: float = field(default_factory=lambda: _float("RUN_TIMEOUT_S", 120.0))
     tool_timeout_s: float = field(default_factory=lambda: _float("TOOL_TIMEOUT_S", 10.0))
     max_verification_attempts: int = field(default_factory=lambda: _int("MAX_VERIFICATION_ATTEMPTS", 2))
+    # always add a fixed category policy search when a modifier search is needed (fix for live miss S11)
+    policy_safeguard: bool = field(default_factory=lambda: _bool("AGENT_POLICY_SAFEGUARD", True))
 
     # queue
     queue_lease_ms: int = field(default_factory=lambda: _int("QUEUE_LEASE_MS", 60000))
