@@ -1,0 +1,1223 @@
+{
+ "aggregate": {
+  "label": "v2",
+  "prompt_version": "v2",
+  "scenarios": 28,
+  "route_accuracy": 1.0,
+  "status_accuracy": 1.0,
+  "expected_passage_recall": 1.0,
+  "verified_rate": 1.0,
+  "section_4_1_case": "escalate_to_human",
+  "draft_groundedness": 1.0,
+  "draft_context_relevance": 0.6788,
+  "draft_faithfulness": 1.0,
+  "draft_hallucination_rate": 0.0,
+  "final_groundedness": 1.0,
+  "final_context_relevance": 0.6788,
+  "final_faithfulness": 1.0,
+  "final_hallucination_rate": 0.0,
+  "mean_steps": 5.3214,
+  "mean_tool_calls": 9.2857,
+  "mean_llm_calls": 3.7143,
+  "mean_prompt_tokens": 3530.8571,
+  "mean_completion_tokens": 485.9643,
+  "mean_cost_usd": 0.0005,
+  "cost_per_100_runs_usd": 0.054747,
+  "cost_by_task_share": {
+   "derive_queries": 0.052,
+   "draft": 0.662,
+   "plan": 0.285
+  },
+  "largest_cost_driver": "draft"
+ },
+ "rows": [
+  {
+   "id": "S01",
+   "title": "Ordinary large enterprise meeting every condition",
+   "expected_route": "pass_to_technical_evaluation",
+   "route": "pass_to_technical_evaluation",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3054,
+   "completion_tokens": 405,
+   "cost_usd": 0.0004674,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.0003354
+   },
+   "seconds": 0.266
+  },
+  {
+   "id": "S02",
+   "title": "SECTION 4.1 REFERENCE CASE - recognised startup whose turnover (Rs.1,50,000 / 3,20,000 / 4,60,000) is below the Rs.5 Lakh required in each year",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "CONFLICT",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6452,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6452,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 12,
+   "llm_calls": 5,
+   "prompt_tokens": 4381,
+   "completion_tokens": 595,
+   "cost_usd": 0.0006761,
+   "cost_by_task": {
+    "plan": 0.0002061,
+    "derive_queries": 5.68e-05,
+    "draft": 0.0004132
+   },
+   "seconds": 0.199
+  },
+  {
+   "id": "S03",
+   "title": "Startup with enough turnover but only 2 years in the desktop business",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "CONFLICT",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6667,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6667,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 12,
+   "llm_calls": 5,
+   "prompt_tokens": 4392,
+   "completion_tokens": 590,
+   "cost_usd": 0.0006752,
+   "cost_by_task": {
+    "plan": 0.0002063,
+    "derive_queries": 5.92e-05,
+    "draft": 0.0004097
+   },
+   "seconds": 0.17
+  },
+  {
+   "id": "S04",
+   "title": "Startup below turnover AND with no CFTI supply",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "CONFLICT",
+    "C2_EXPERIENCE": "CONFLICT",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.625,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.625,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 14,
+   "llm_calls": 6,
+   "prompt_tokens": 5634,
+   "completion_tokens": 772,
+   "cost_usd": 0.0008722,
+   "cost_by_task": {
+    "plan": 0.0002941,
+    "derive_queries": 9.12e-05,
+    "draft": 0.0004869
+   },
+   "seconds": 0.134
+  },
+  {
+   "id": "S05",
+   "title": "Startup that meets every condition outright",
+   "expected_route": "pass_to_technical_evaluation",
+   "route": "pass_to_technical_evaluation",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3036,
+   "completion_tokens": 402,
+   "cost_usd": 0.0004644,
+   "cost_by_task": {
+    "plan": 0.0001314,
+    "draft": 0.000333
+   },
+   "seconds": 0.1
+  },
+  {
+   "id": "S06",
+   "title": "Large enterprise below Rs.5 Lakh in one year",
+   "expected_route": "reject_with_cited_condition",
+   "route": "reject_with_cited_condition",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "UNMET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5714,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5714,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 10,
+   "llm_calls": 4,
+   "prompt_tokens": 3534,
+   "completion_tokens": 492,
+   "cost_usd": 0.0005502,
+   "cost_by_task": {
+    "plan": 0.0001487,
+    "derive_queries": 6.03e-05,
+    "draft": 0.0003412
+   },
+   "seconds": 0.093
+  },
+  {
+   "id": "S07",
+   "title": "Large enterprise with no supply to any CFTI",
+   "expected_route": "reject_with_cited_condition",
+   "route": "reject_with_cited_condition",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "UNMET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5517,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5517,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 10,
+   "llm_calls": 4,
+   "prompt_tokens": 3577,
+   "completion_tokens": 490,
+   "cost_usd": 0.0005537,
+   "cost_by_task": {
+    "plan": 0.0001489,
+    "derive_queries": 6.22e-05,
+    "draft": 0.0003426
+   },
+   "seconds": 0.081
+  },
+  {
+   "id": "S08",
+   "title": "EMD neither paid nor exemption claimed",
+   "expected_route": "reject_with_cited_condition",
+   "route": "reject_with_cited_condition",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "UNMET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3118,
+   "completion_tokens": 418,
+   "cost_usd": 0.000479,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.000347
+   },
+   "seconds": 0.047
+  },
+  {
+   "id": "S09",
+   "title": "EMD paid short (Rs.8,800 of Rs.17,600)",
+   "expected_route": "reject_with_cited_condition",
+   "route": "reject_with_cited_condition",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "UNMET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3055,
+   "completion_tokens": 405,
+   "cost_usd": 0.0004675,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.0003355
+   },
+   "seconds": 0.053
+  },
+  {
+   "id": "S10",
+   "title": "MSE paying the EMD in full and meeting every condition",
+   "expected_route": "pass_to_technical_evaluation",
+   "route": "pass_to_technical_evaluation",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3004,
+   "completion_tokens": 401,
+   "cost_usd": 0.0004608,
+   "cost_by_task": {
+    "plan": 0.0001312,
+    "draft": 0.0003296
+   },
+   "seconds": 0.063
+  },
+  {
+   "id": "S11",
+   "title": "MSE claiming EMD exemption - tender demands EMD from all, GFR Rule 170 exempts MSEs",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "CONFLICT",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6923,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6923,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 10,
+   "llm_calls": 5,
+   "prompt_tokens": 4187,
+   "completion_tokens": 584,
+   "cost_usd": 0.0006523,
+   "cost_by_task": {
+    "plan": 0.0001947,
+    "derive_queries": 7.72e-05,
+    "draft": 0.0003804
+   },
+   "seconds": 0.09
+  },
+  {
+   "id": "S12",
+   "title": "MSE claiming EMD exemption without its registration certificate",
+   "expected_route": "seek_clarification",
+   "route": "seek_clarification",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "INSUFFICIENT",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6154,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6154,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 10,
+   "llm_calls": 5,
+   "prompt_tokens": 4008,
+   "completion_tokens": 538,
+   "cost_usd": 0.000616,
+   "cost_by_task": {
+    "plan": 0.0001947,
+    "derive_queries": 7.73e-05,
+    "draft": 0.000344
+   },
+   "seconds": 0.06
+  },
+  {
+   "id": "S13",
+   "title": "MSE with turnover below Rs.5 Lakh (discretionary MSE relaxation)",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "CONFLICT",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6538,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6538,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 10,
+   "llm_calls": 4,
+   "prompt_tokens": 3745,
+   "completion_tokens": 569,
+   "cost_usd": 0.0006021,
+   "cost_by_task": {
+    "plan": 0.0001485,
+    "derive_queries": 6.19e-05,
+    "draft": 0.0003917
+   },
+   "seconds": 0.087
+  },
+  {
+   "id": "S14",
+   "title": "Startup (not MSE) claiming EMD exemption",
+   "expected_route": "seek_clarification",
+   "route": "seek_clarification",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "INSUFFICIENT",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5926,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5926,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 10,
+   "llm_calls": 5,
+   "prompt_tokens": 4050,
+   "completion_tokens": 547,
+   "cost_usd": 0.0006238,
+   "cost_by_task": {
+    "plan": 0.0001937,
+    "derive_queries": 7.22e-05,
+    "draft": 0.0003579
+   },
+   "seconds": 0.08
+  },
+  {
+   "id": "S15",
+   "title": "CA certificate and page declaration missing",
+   "expected_route": "seek_clarification",
+   "route": "seek_clarification",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "INSUFFICIENT",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3071,
+   "completion_tokens": 424,
+   "cost_usd": 0.0004767,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.0003447
+   },
+   "seconds": 0.059
+  },
+  {
+   "id": "S16",
+   "title": "Registered office and service centres outside the five states",
+   "expected_route": "reject_with_cited_condition",
+   "route": "reject_with_cited_condition",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "UNMET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3048,
+   "completion_tokens": 422,
+   "cost_usd": 0.0004736,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.0003416
+   },
+   "seconds": 0.051
+  },
+  {
+   "id": "S17",
+   "title": "Consortium bid - corpus does not say how criteria combine",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "ESCALATE",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.72,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.72,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 9,
+   "llm_calls": 3,
+   "prompt_tokens": 3256,
+   "completion_tokens": 449,
+   "cost_usd": 0.0005052,
+   "cost_by_task": {
+    "plan": 0.0001452,
+    "draft": 0.00036
+   },
+   "seconds": 0.065
+  },
+  {
+   "id": "S18",
+   "title": "Foreign bidder",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "ESCALATE",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "UNMET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6667,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6667,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 9,
+   "llm_calls": 3,
+   "prompt_tokens": 3309,
+   "completion_tokens": 453,
+   "cost_usd": 0.0005121,
+   "cost_by_task": {
+    "plan": 0.000146,
+    "draft": 0.0003661
+   },
+   "seconds": 0.067
+  },
+  {
+   "id": "S19",
+   "title": "Bidder category not stated",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "ESCALATE",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3056,
+   "completion_tokens": 415,
+   "cost_usd": 0.0004716,
+   "cost_by_task": {
+    "plan": 0.0001316,
+    "draft": 0.00034
+   },
+   "seconds": 0.047
+  },
+  {
+   "id": "S20",
+   "title": "Declared startup incorporated 2006 (beyond the 10-year startup window)",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "ESCALATE",
+    "C1_TURNOVER": "ESCALATE",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3105,
+   "completion_tokens": 468,
+   "cost_usd": 0.0004977,
+   "cost_by_task": {
+    "plan": 0.0001314,
+    "draft": 0.0003663
+   },
+   "seconds": 0.063
+  },
+  {
+   "id": "S21",
+   "title": "Declared large enterprise that also supplies an Udyam number",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "ESCALATE",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3072,
+   "completion_tokens": 426,
+   "cost_usd": 0.0004776,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.0003456
+   },
+   "seconds": 0.06
+  },
+  {
+   "id": "S22",
+   "title": "Startup without its DPIIT recognition certificate",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "ESCALATE",
+    "C1_TURNOVER": "ESCALATE",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3092,
+   "completion_tokens": 455,
+   "cost_usd": 0.0004912,
+   "cost_by_task": {
+    "plan": 0.0001314,
+    "draft": 0.0003598
+   },
+   "seconds": 0.062
+  },
+  {
+   "id": "S23",
+   "title": "Turnover exactly Rs.5,00,000 in the weakest year (boundary)",
+   "expected_route": "pass_to_technical_evaluation",
+   "route": "pass_to_technical_evaluation",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3054,
+   "completion_tokens": 404,
+   "cost_usd": 0.000467,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.000335
+   },
+   "seconds": 0.084
+  },
+  {
+   "id": "S24",
+   "title": "Turnover Rs.1 below Rs.5 Lakh in one year (boundary)",
+   "expected_route": "reject_with_cited_condition",
+   "route": "reject_with_cited_condition",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "UNMET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5714,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.5714,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 10,
+   "llm_calls": 4,
+   "prompt_tokens": 3562,
+   "completion_tokens": 492,
+   "cost_usd": 0.000553,
+   "cost_by_task": {
+    "plan": 0.0001487,
+    "derive_queries": 6.03e-05,
+    "draft": 0.000344
+   },
+   "seconds": 0.086
+  },
+  {
+   "id": "S25",
+   "title": "Startup below turnover AND missing documents (conflict takes precedence)",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "CONFLICT",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "INSUFFICIENT",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6452,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6452,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 12,
+   "llm_calls": 5,
+   "prompt_tokens": 4405,
+   "completion_tokens": 604,
+   "cost_usd": 0.0006821,
+   "cost_by_task": {
+    "plan": 0.0002061,
+    "derive_queries": 5.68e-05,
+    "draft": 0.0004192
+   },
+   "seconds": 0.078
+  },
+  {
+   "id": "S26",
+   "title": "Authorised representative (not the OEM) without OEM authorisation",
+   "expected_route": "seek_clarification",
+   "route": "seek_clarification",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "INSUFFICIENT",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 3080,
+   "completion_tokens": 415,
+   "cost_usd": 0.000474,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.000342
+   },
+   "seconds": 0.048
+  },
+  {
+   "id": "S27",
+   "title": "OEM bidding itself needs no OEM authorisation",
+   "expected_route": "pass_to_technical_evaluation",
+   "route": "pass_to_technical_evaluation",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.7273,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 5,
+   "tool_calls": 8,
+   "llm_calls": 3,
+   "prompt_tokens": 2974,
+   "completion_tokens": 401,
+   "cost_usd": 0.0004578,
+   "cost_by_task": {
+    "plan": 0.000132,
+    "draft": 0.0003258
+   },
+   "seconds": 0.051
+  },
+  {
+   "id": "S28",
+   "title": "MSE with only 2 years in the desktop business",
+   "expected_route": "escalate_to_human",
+   "route": "escalate_to_human",
+   "route_correct": true,
+   "status_accuracy": 1.0,
+   "statuses": {
+    "C0_CATEGORY": "MET",
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "CONFLICT",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "verified": true,
+   "attempts": 1,
+   "expected_passage_recall": 1.0,
+   "draft": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6071,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "final": {
+    "groundedness": 1.0,
+    "context_relevance": 0.6071,
+    "faithfulness": 1.0,
+    "hallucination_rate": 0.0
+   },
+   "steps": 6,
+   "tool_calls": 10,
+   "llm_calls": 4,
+   "prompt_tokens": 4005,
+   "completion_tokens": 571,
+   "cost_usd": 0.0006289,
+   "cost_by_task": {
+    "plan": 0.0001487,
+    "derive_queries": 6.43e-05,
+    "draft": 0.0004159
+   },
+   "seconds": 0.107
+  }
+ ]
+}

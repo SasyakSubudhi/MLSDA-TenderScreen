@@ -1,0 +1,496 @@
+{
+ "version": "2026.11-2",
+ "tender": "IITPKD/AR/RS/053/2018-19",
+ "scenarios": [
+  {
+   "id": "S01",
+   "title": "Ordinary large enterprise meeting every condition",
+   "base": "ordinary_pass",
+   "overrides": {},
+   "expected_route": "pass_to_technical_evaluation",
+   "expected_statuses": {
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET",
+    "C3_EMD": "MET",
+    "C4_DOCUMENTS": "MET",
+    "C5_REGIONAL_PRESENCE": "MET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7",
+    "ANNEX-II-6",
+    "TENDER-5.3",
+    "ANNEX-VIII",
+    "ANNEX-II-4-5"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S02",
+   "title": "SECTION 4.1 REFERENCE CASE - recognised startup whose turnover (Rs.1,50,000 / 3,20,000 / 4,60,000) is below the Rs.5 Lakh required in each year",
+   "base": "startup_low_turnover",
+   "overrides": {},
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C1_TURNOVER": "CONFLICT",
+    "C2_EXPERIENCE": "MET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7",
+    "DOE-2016-09",
+    "GFR-173"
+   ],
+   "note": "Annexure-II 7 alone says unmet; DoE OM 20-09-2016 para 2 and GFR 2017 Rule 173(i) relax prior turnover for startups. Expected: escalation citing both, not a decision."
+  },
+  {
+   "id": "S03",
+   "title": "Startup with enough turnover but only 2 years in the desktop business",
+   "base": "startup_low_turnover",
+   "overrides": {
+    "financials.annual_turnover_inr.2015-16": 600000,
+    "financials.annual_turnover_inr.2016-17": 700000,
+    "financials.annual_turnover_inr.2017-18": 800000,
+    "experience.years_in_desktop_business": 2
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "CONFLICT"
+   },
+   "supporting_passages": [
+    "ANNEX-II-6",
+    "DOE-2016-09",
+    "GFR-173"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S04",
+   "title": "Startup below turnover AND with no CFTI supply",
+   "base": "startup_low_turnover",
+   "overrides": {
+    "experience.cfti_supply_orders": 0
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C1_TURNOVER": "CONFLICT",
+    "C2_EXPERIENCE": "CONFLICT"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7",
+    "ANNEX-II-8",
+    "DOE-2016-09",
+    "GFR-173"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S05",
+   "title": "Startup that meets every condition outright",
+   "base": "startup_low_turnover",
+   "overrides": {
+    "financials.annual_turnover_inr.2015-16": 600000,
+    "financials.annual_turnover_inr.2016-17": 700000,
+    "financials.annual_turnover_inr.2017-18": 800000
+   },
+   "expected_route": "pass_to_technical_evaluation",
+   "expected_statuses": {
+    "C1_TURNOVER": "MET",
+    "C2_EXPERIENCE": "MET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7",
+    "ANNEX-II-6"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S06",
+   "title": "Large enterprise below Rs.5 Lakh in one year",
+   "base": "large_low_turnover_reject",
+   "overrides": {},
+   "expected_route": "reject_with_cited_condition",
+   "expected_statuses": {
+    "C1_TURNOVER": "UNMET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S07",
+   "title": "Large enterprise with no supply to any CFTI",
+   "base": "ordinary_pass",
+   "overrides": {
+    "experience.cfti_supply_orders": 0
+   },
+   "expected_route": "reject_with_cited_condition",
+   "expected_statuses": {
+    "C2_EXPERIENCE": "UNMET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-8"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S08",
+   "title": "EMD neither paid nor exemption claimed",
+   "base": "ordinary_pass",
+   "overrides": {
+    "emd.status": "not_paid",
+    "emd.amount_inr": 0,
+    "emd.transaction_ref": null
+   },
+   "expected_route": "reject_with_cited_condition",
+   "expected_statuses": {
+    "C3_EMD": "UNMET"
+   },
+   "supporting_passages": [
+    "TENDER-5.3",
+    "ANNEX-VIII"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S09",
+   "title": "EMD paid short (Rs.8,800 of Rs.17,600)",
+   "base": "ordinary_pass",
+   "overrides": {
+    "emd.amount_inr": 8800
+   },
+   "expected_route": "reject_with_cited_condition",
+   "expected_statuses": {
+    "C3_EMD": "UNMET"
+   },
+   "supporting_passages": [
+    "TENDER-5.3",
+    "ANNEX-VIII"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S10",
+   "title": "MSE paying the EMD in full and meeting every condition",
+   "base": "mse_emd_exemption_conflict",
+   "overrides": {
+    "emd.status": "paid",
+    "emd.amount_inr": 17600,
+    "emd.transaction_ref": "DD-004-2019"
+   },
+   "expected_route": "pass_to_technical_evaluation",
+   "expected_statuses": {
+    "C3_EMD": "MET"
+   },
+   "supporting_passages": [
+    "TENDER-5.3",
+    "ANNEX-VIII"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S11",
+   "title": "MSE claiming EMD exemption - tender demands EMD from all, GFR Rule 170 exempts MSEs",
+   "base": "mse_emd_exemption_conflict",
+   "overrides": {},
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C3_EMD": "CONFLICT"
+   },
+   "supporting_passages": [
+    "TENDER-5.3",
+    "GFR-170"
+   ],
+   "note": "Second tender-vs-rules conflict: clause 5.3.1 rejects bids without EMD; GFR 2017 Rule 170(i) says bid security is obtained from bidders except MSEs."
+  },
+  {
+   "id": "S12",
+   "title": "MSE claiming EMD exemption without its registration certificate",
+   "base": "mse_emd_exemption_conflict",
+   "overrides": {
+    "documents.msme_certificate": false
+   },
+   "expected_route": "seek_clarification",
+   "expected_statuses": {
+    "C3_EMD": "INSUFFICIENT"
+   },
+   "supporting_passages": [
+    "TENDER-5.3"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S13",
+   "title": "MSE with turnover below Rs.5 Lakh (discretionary MSE relaxation)",
+   "base": "mse_emd_exemption_conflict",
+   "overrides": {
+    "financials.annual_turnover_inr.2015-16": 300000,
+    "financials.annual_turnover_inr.2016-17": 350000,
+    "financials.annual_turnover_inr.2017-18": 450000,
+    "emd.status": "paid",
+    "emd.amount_inr": 17600,
+    "emd.transaction_ref": "DD-013-2019"
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C1_TURNOVER": "CONFLICT"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7",
+    "DOE-2016-07-REPRINT"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S14",
+   "title": "Startup (not MSE) claiming EMD exemption",
+   "base": "startup_low_turnover",
+   "overrides": {
+    "emd.status": "exemption_claimed",
+    "emd.amount_inr": 0,
+    "emd.transaction_ref": null,
+    "financials.annual_turnover_inr.2015-16": 600000,
+    "financials.annual_turnover_inr.2016-17": 700000,
+    "financials.annual_turnover_inr.2017-18": 800000
+   },
+   "expected_route": "seek_clarification",
+   "expected_statuses": {
+    "C3_EMD": "INSUFFICIENT",
+    "C1_TURNOVER": "MET"
+   },
+   "supporting_passages": [
+    "TENDER-5.3"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S15",
+   "title": "CA certificate and page declaration missing",
+   "base": "missing_documents_clarify",
+   "overrides": {},
+   "expected_route": "seek_clarification",
+   "expected_statuses": {
+    "C4_DOCUMENTS": "INSUFFICIENT"
+   },
+   "supporting_passages": [
+    "TENDER-5.9",
+    "ANNEX-VII"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S16",
+   "title": "Registered office and service centres outside the five states",
+   "base": "outside_region_reject",
+   "overrides": {},
+   "expected_route": "reject_with_cited_condition",
+   "expected_statuses": {
+    "C5_REGIONAL_PRESENCE": "UNMET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-4-5"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S17",
+   "title": "Consortium bid - corpus does not say how criteria combine",
+   "base": "consortium_cannot_answer",
+   "overrides": {},
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C0_CATEGORY": "ESCALATE"
+   },
+   "supporting_passages": [
+    "TENDER-1.7"
+   ],
+   "note": "The case the corpus cannot answer: must escalate, not fabricate."
+  },
+  {
+   "id": "S18",
+   "title": "Foreign bidder",
+   "base": "ordinary_pass",
+   "overrides": {
+    "bidder.declared_category": "foreign",
+    "bidder.country_of_incorporation": "SG",
+    "bidder.registered_office_state": "Outside India"
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C0_CATEGORY": "ESCALATE"
+   },
+   "supporting_passages": [
+    "ANNEX-II-2"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S19",
+   "title": "Bidder category not stated",
+   "base": "ordinary_pass",
+   "overrides": {
+    "bidder.declared_category": "not_stated"
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C0_CATEGORY": "ESCALATE"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S20",
+   "title": "Declared startup incorporated 2006 (beyond the 10-year startup window)",
+   "base": "startup_low_turnover",
+   "overrides": {
+    "bidder.date_of_incorporation": "2006-03-01"
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C0_CATEGORY": "ESCALATE"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S21",
+   "title": "Declared large enterprise that also supplies an Udyam number",
+   "base": "ordinary_pass",
+   "overrides": {
+    "bidder.udyam_registration": "UDYAM-KL-07-0099999"
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C0_CATEGORY": "ESCALATE"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S22",
+   "title": "Startup without its DPIIT recognition certificate",
+   "base": "startup_low_turnover",
+   "overrides": {
+    "documents.startup_recognition_certificate": false
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C0_CATEGORY": "ESCALATE"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S23",
+   "title": "Turnover exactly Rs.5,00,000 in the weakest year (boundary)",
+   "base": "ordinary_pass",
+   "overrides": {
+    "financials.annual_turnover_inr.2015-16": 500000
+   },
+   "expected_route": "pass_to_technical_evaluation",
+   "expected_statuses": {
+    "C1_TURNOVER": "MET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S24",
+   "title": "Turnover Rs.1 below Rs.5 Lakh in one year (boundary)",
+   "base": "ordinary_pass",
+   "overrides": {
+    "financials.annual_turnover_inr.2016-17": 499999
+   },
+   "expected_route": "reject_with_cited_condition",
+   "expected_statuses": {
+    "C1_TURNOVER": "UNMET"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S25",
+   "title": "Startup below turnover AND missing documents (conflict takes precedence)",
+   "base": "startup_low_turnover",
+   "overrides": {
+    "documents.ca_certificate": false
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C1_TURNOVER": "CONFLICT",
+    "C4_DOCUMENTS": "INSUFFICIENT"
+   },
+   "supporting_passages": [
+    "ANNEX-II-7",
+    "DOE-2016-09",
+    "GFR-173"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S26",
+   "title": "Authorised representative (not the OEM) without OEM authorisation",
+   "base": "ordinary_pass",
+   "overrides": {
+    "documents.oem_authorization": false
+   },
+   "expected_route": "seek_clarification",
+   "expected_statuses": {
+    "C4_DOCUMENTS": "INSUFFICIENT"
+   },
+   "supporting_passages": [
+    "ANNEX-II-1"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S27",
+   "title": "OEM bidding itself needs no OEM authorisation",
+   "base": "ordinary_pass",
+   "overrides": {
+    "bidder.is_oem": true,
+    "documents.oem_authorization": false
+   },
+   "expected_route": "pass_to_technical_evaluation",
+   "expected_statuses": {
+    "C4_DOCUMENTS": "MET"
+   },
+   "supporting_passages": [
+    "TENDER-5.9"
+   ],
+   "note": ""
+  },
+  {
+   "id": "S28",
+   "title": "MSE with only 2 years in the desktop business",
+   "base": "mse_emd_exemption_conflict",
+   "overrides": {
+    "experience.years_in_desktop_business": 2,
+    "emd.status": "paid",
+    "emd.amount_inr": 17600,
+    "emd.transaction_ref": "DD-028-2019"
+   },
+   "expected_route": "escalate_to_human",
+   "expected_statuses": {
+    "C2_EXPERIENCE": "CONFLICT"
+   },
+   "supporting_passages": [
+    "ANNEX-II-6",
+    "DOE-2016-07-REPRINT"
+   ],
+   "note": ""
+  }
+ ]
+}

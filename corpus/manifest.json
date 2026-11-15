@@ -1,0 +1,50 @@
+{
+  "corpus_version": "2026.11-2",
+  "documents": [
+    {
+      "doc_id": "tender",
+      "family": "tender",
+      "file": "raw/iitpkd_nit_desktops_2018_19_053.pdf",
+      "title": "IIT Palakkad NIT No. IITPKD/AR/RS/053/2018-19 - Supply, installation, testing and commissioning of desktop computers for research scholars (published on CPPP; closed 22-04-2019)",
+      "short": "Tender IITPKD/AR/RS/053/2018-19",
+      "url": "https://smail.iitpkd.ac.in/sites/default/files/2019-03/NIT_DESKTOPS_RS_1.pdf",
+      "published_on": "Central Public Procurement Portal https://eprocure.gov.in/cppp/ and https://iitpkd.ac.in/tenders (stated in clause 1.2 of the tender)",
+      "page_offset": 0,
+      "sha256": "f27c40442445a59bc25161fcbe646b59066e2ceb1c7a1db6e0c34e1821071efb",
+      "version": "published 28-03-2019, closed 22-04-2019"
+    },
+    {
+      "doc_id": "doe_om_2016_07",
+      "family": "policy",
+      "file": "raw/doe_om_2016_07_25.pdf",
+      "title": "Dept. of Expenditure OM No. F.20/2/2014-PPD(Pt.) dated 25 July 2016 - Relaxation of prior turnover / prior experience for Startups and MSEs (Ministry of Coal copy)",
+      "short": "DoE OM 25-07-2016",
+      "url": "https://coal.nic.in/sites/default/files/2020-01/02-08-16-a.pdf",
+      "page_offset": 0,
+      "sha256": "f07598792c063d429b12f38298c2cb41e6fbd8f59b12bbbc26fa7d17ac796196",
+      "version": "OM dated 25-07-2016"
+    },
+    {
+      "doc_id": "doe_om_2016_09",
+      "family": "policy",
+      "file": "raw/dpe_compendium_doe_om_2016_09_20.pdf",
+      "title": "Dept. of Expenditure OM No. F.20/2/2014-PPD(Pt.) dated 20 September 2016 - Relaxation of norms for Startups (reproduced in DPE compendium, pp. 209-210)",
+      "short": "DoE OM 20-09-2016",
+      "url": "https://www.dpe.gov.in/static/uploads/2025/07/89f7e04fda067d5652584449f1e4ee18.pdf",
+      "page_offset": 234,
+      "sha256": "64e193e50fe0ffe795214b849911a315a7ffd3623d72649764b46be642e7c4d9",
+      "version": "OM dated 20-09-2016"
+    },
+    {
+      "doc_id": "gfr_2017",
+      "family": "policy",
+      "file": "raw/gfr_2017_ch6_procurement.pdf",
+      "title": "General Financial Rules 2017, Chapter 6 - Procurement of Goods and Services (pages 40-57 of the official PDF)",
+      "short": "GFR 2017",
+      "url": "https://cga.nic.in/writereaddata/file/GFR2017.pdf",
+      "page_offset": 39,
+      "sha256": "7ef28e2d86353753b24a26907131a52cd1180025f66079182552932bf96b3a7b",
+      "version": "GFR 2017 (original notification)"
+    }
+  ]
+}

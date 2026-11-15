@@ -1,0 +1,46 @@
+[
+ {
+  "app_name": "TenderScreen",
+  "app_version": "v2_k2",
+  "context_relevance": 0.9544321429,
+  "faithfulness": 1.0,
+  "groundedness": 1.0,
+  "hallucination_rate": 0.0,
+  "route_accuracy": 1.0,
+  "latency": 0.3644922857,
+  "total_cost": 0.0
+ },
+ {
+  "app_name": "TenderScreen",
+  "app_version": "v1",
+  "context_relevance": 0.7200678571,
+  "faithfulness": 1.0,
+  "groundedness": 1.0,
+  "hallucination_rate": 0.0,
+  "route_accuracy": 0.75,
+  "latency": 0.2718405,
+  "total_cost": 0.0
+ },
+ {
+  "app_name": "TenderScreen",
+  "app_version": "v2",
+  "context_relevance": 0.6788107143,
+  "faithfulness": 1.0,
+  "groundedness": 1.0,
+  "hallucination_rate": 0.0,
+  "route_accuracy": 1.0,
+  "latency": 0.2977511429,
+  "total_cost": 0.0
+ },
+ {
+  "app_name": "TenderScreen",
+  "app_version": "v2_faulty_model",
+  "context_relevance": 0.6788107143,
+  "faithfulness": 1.0,
+  "groundedness": 0.9365821429,
+  "hallucination_rate": 0.1667,
+  "route_accuracy": 1.0,
+  "latency": 0.6350188929,
+  "total_cost": 0.0
+ }
+]
