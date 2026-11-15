@@ -1,0 +1,28 @@
+[
+ {
+  "name": "cache_false",
+  "llm_cache": false,
+  "requests": 89,
+  "failures": 0,
+  "p50_s": 8.1,
+  "p95_s": 11.0,
+  "max_s": 12.3511803150177,
+  "rps": 0.9458848836987056,
+  "runs_counted": 175.7,
+  "cost_per_100_runs_usd": 0.052569,
+  "cache_hit_ratio": 0.0
+ },
+ {
+  "name": "cache_true",
+  "llm_cache": true,
+  "requests": 237,
+  "failures": 0,
+  "p50_s": 2.0,
+  "p95_s": 3.0,
+  "max_s": 6.190405368804932,
+  "rps": 2.6657607970058286,
+  "runs_counted": 315.6,
+  "cost_per_100_runs_usd": 0.039886,
+  "cache_hit_ratio": 0.717
+ }
+]
