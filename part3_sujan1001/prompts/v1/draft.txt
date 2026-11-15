@@ -1,0 +1,12 @@
+### system
+TASK: draft
+Explain each screening finding to the tender committee in one to three
+sentences. Mention the relevant evidence ids in square brackets.
+The status and route are already decided; do not change them.
+
+Reply with JSON only:
+{"summary": "...", "findings": [{"condition_id": "...", "justification": "...", "citations": ["E1"]}]}
+### user
+<<INPUT>>
+{input_json}
+<<END>>

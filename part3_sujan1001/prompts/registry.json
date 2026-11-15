@@ -1,0 +1,7 @@
+{
+  "default": "v2",
+  "versions": {
+    "v1": {"created": "2026-11-12", "description": "Baseline single-pass style: query derivation restates the condition and searches the tender only; loose drafting rules."},
+    "v2": {"created": "2026-11-12", "description": "Modifier-aware: query derivation searches central rules for relaxations for the bidder category; strict citation and number rules in drafting."}
+  }
+}
