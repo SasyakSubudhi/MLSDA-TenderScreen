@@ -1,9 +1,43 @@
 # TenderScreen - start everything with:   docker compose up --build
 # Scale the research agent with:          docker compose up -d --scale agent-worker=3
 #
-# Configuration is injected at runtime: .env.example holds the documented,
-# non-secret defaults (so a clean clone starts); an optional .env (git-ignored)
-# overrides them and is where API keys go.
+# Configuration is injected per service. .env.example holds the documented,
+# NON-SECRET defaults and is the only env file the containers read, so a clean
+# clone starts with the built-in stub and nothing else is needed. The project
+# .env (git-ignored) is used only by Compose itself, to fill the ${VAR}
+# references below (ports, worker count and the x-tunables block); it is never
+# injected wholesale into a container. A provider API key is a file secret, mounted into llm-gateway only:
+#   docker compose -f docker-compose.yml -f docker-compose.hosted.yml up -d
+# See docs/SECRETS.md. Published ports are bound to 127.0.0.1; see
+# docker-compose.shared.yml for shared deployments.
+
+x-tunables: &tunables
+  # Non-secret, per-run tunables. The default after ":-" repeats the value in .env.example
+  # (tests/test_compose_config.py keeps the two in step); a value in your shell or in the
+  # project .env overrides it. Secrets never go here - see docs/SECRETS.md.
+  LLM_PROVIDER_NAME: ${LLM_PROVIDER_NAME:-stub}
+  LLM_BASE_URL: ${LLM_BASE_URL:-http://llm-stub:8200/v1}
+  LLM_MODEL: ${LLM_MODEL:-}
+  LLM_PRICE_INPUT_PER_1M: ${LLM_PRICE_INPUT_PER_1M:-0.10}
+  LLM_PRICE_OUTPUT_PER_1M: ${LLM_PRICE_OUTPUT_PER_1M:-0.40}
+  LLM_DAILY_BUDGET_USD: ${LLM_DAILY_BUDGET_USD:-1.00}
+  LLM_PROVIDER_TIMEOUT_S: ${LLM_PROVIDER_TIMEOUT_S:-20}
+  LLM_CALL_TIMEOUT_S: ${LLM_CALL_TIMEOUT_S:-30}
+  LLM_MAX_ATTEMPTS: ${LLM_MAX_ATTEMPTS:-3}
+  LLM_BACKOFF_BASE_S: ${LLM_BACKOFF_BASE_S:-0.5}
+  BREAKER_FAILURE_THRESHOLD: ${BREAKER_FAILURE_THRESHOLD:-5}
+  BREAKER_OPEN_SECONDS: ${BREAKER_OPEN_SECONDS:-20}
+  LLM_CACHE_ENABLED: ${LLM_CACHE_ENABLED:-true}
+  LLM_CACHE_TTL_S: ${LLM_CACHE_TTL_S:-86400}
+  STUB_DELAY_MS: ${STUB_DELAY_MS:-800}
+  STUB_JITTER_MS: ${STUB_JITTER_MS:-200}
+  STUB_MODE: ${STUB_MODE:-ok}
+  RETRIEVAL_CACHE_ENABLED: ${RETRIEVAL_CACHE_ENABLED:-true}
+  RUN_CACHE_ENABLED: ${RUN_CACHE_ENABLED:-true}
+  RUN_TIMEOUT_S: ${RUN_TIMEOUT_S:-90}
+  RATE_LIMIT_PER_MIN: ${RATE_LIMIT_PER_MIN:-30}
+  AGENT_POLICY_SAFEGUARD: ${AGENT_POLICY_SAFEGUARD:-true}
+  DEMO_MODE: ${DEMO_MODE:-true}
 
 x-app: &app
   image: tenderscreen-app:latest
@@ -12,8 +46,6 @@ x-app: &app
   env_file:
     - path: .env.example
       required: true
-    - path: .env
-      required: false
   restart: unless-stopped
   networks: [tenderscreen]
 
@@ -35,6 +67,7 @@ services:
     <<: *app
     command: ["python", "-m", "tenderscreen.retrieval.ingest"]
     environment:
+      <<: *tunables
       SERVICE_NAME: indexer
     volumes: [index-data:/data]
     restart: "no"
@@ -43,6 +76,7 @@ services:
     <<: *app
     command: ["uvicorn", "tenderscreen.llm.stub_service:app", "--host", "0.0.0.0", "--port", "8200", "--no-access-log"]
     environment:
+      <<: *tunables
       SERVICE_NAME: llm-stub
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8200/health',timeout=2)"]
@@ -54,6 +88,7 @@ services:
     <<: *app
     command: ["uvicorn", "tenderscreen.llm.gateway:app", "--host", "0.0.0.0", "--port", "8100", "--no-access-log"]
     environment:
+      <<: *tunables
       SERVICE_NAME: llm-gateway
     depends_on:
       redis: {condition: service_healthy}
@@ -68,8 +103,9 @@ services:
     <<: *app
     command: ["uvicorn", "tenderscreen.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
     environment:
+      <<: *tunables
       SERVICE_NAME: api
-    ports: ["${API_PORT:-8000}:8000"]
+    ports: ["127.0.0.1:${API_PORT:-8000}:8000"]
     volumes: [index-data:/data:ro]
     depends_on:
       redis: {condition: service_healthy}
@@ -86,6 +122,7 @@ services:
     <<: *app
     command: ["python", "-m", "tenderscreen.agents.worker"]
     environment:
+      <<: *tunables
       SERVICE_NAME: agent-worker
       WORKER_ROLE: research
       METRICS_PORT: "9101"
@@ -109,6 +146,7 @@ services:
     <<: *app
     command: ["python", "-m", "tenderscreen.agents.worker"]
     environment:
+      <<: *tunables
       SERVICE_NAME: verifier-worker
       WORKER_ROLE: verifier
       METRICS_PORT: "9102"
@@ -124,11 +162,46 @@ services:
   resource-exporter:
     <<: *app
     command: ["python", "-m", "tenderscreen.llm.resource_exporter"]
-    user: "0"   # the Docker socket is owned by root; mounted read-only
+    # No raw Docker socket here: container metrics come through the read-only, container-scoped
+    # docker-socket-proxy below (GET /containers/* only).
     environment:
+      <<: *tunables
       SERVICE_NAME: resource-exporter
       METRICS_PORT: "9103"
+      DOCKER_API_URL: http://docker-proxy:2375
+    depends_on: [docker-proxy]
+
+  # The ONLY service that touches /var/run/docker.sock. It is not published to the host, and it
+  # answers only read-only container queries (no POST, exec, images, volumes, networks, ...).
+  # This is still a trusted component: a mounted Docker socket is root-equivalent on the host
+  # if the proxy itself were compromised, so do not publish port 2375 or add it to other networks.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    environment:
+      CONTAINERS: "1"   # allow GET /containers/*
+      POST: "0"         # no state-changing calls
+      INFO: "0"
+      IMAGES: "0"
+      NETWORKS: "0"
+      VOLUMES: "0"
+      EXEC: "0"
+      SERVICES: "0"
+      TASKS: "0"
+      SECRETS: "0"
+      CONFIGS: "0"
+      SWARM: "0"
+      AUTH: "0"
+      BUILD: "0"
+      COMMIT: "0"
+      DISTRIBUTION: "0"
+      EVENTS: "0"
+      NODES: "0"
+      PLUGINS: "0"
+      SESSION: "0"
+      SYSTEM: "0"
     volumes: ["/var/run/docker.sock:/var/run/docker.sock:ro"]
+    restart: unless-stopped
+    networks: [tenderscreen]
 
   prometheus:
     image: prom/prometheus:v2.55.1
@@ -136,15 +209,12 @@ services:
     volumes:
       - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
-    ports: ["9090:9090"]
+    ports: ["127.0.0.1:9090:9090"]
     restart: unless-stopped
     networks: [tenderscreen]
 
   grafana:
     image: grafana/grafana:11.3.1
-    env_file:
-      - path: .env
-        required: false
     environment:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
@@ -153,7 +223,7 @@ services:
       - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
-    ports: ["3000:3000"]
+    ports: ["127.0.0.1:3000:3000"]
     depends_on: [prometheus]
     restart: unless-stopped
     networks: [tenderscreen]
@@ -162,13 +232,14 @@ services:
     image: jaegertracing/all-in-one:1.62.0
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
-    ports: ["16686:16686"]
+    ports: ["127.0.0.1:16686:16686"]
     restart: unless-stopped
     networks: [tenderscreen]
 
   # optional real model on your own machine (no API key needed):
-  #   put LLM_BASE_URL=http://ollama:11434/v1, LLM_MODEL=tenderscreen-local and OLLAMA_MODEL=<model id> in .env, then
-  #   docker compose --profile local-llm up -d
+  #   LLM_BASE_URL=http://ollama:11434/v1 LLM_MODEL=tenderscreen-local OLLAMA_MODEL=<model id> \
+  #     docker compose --profile local-llm up -d
+  #   (these are read from your shell or the project .env for ${VAR} substitution; .env is not injected into containers.)
   ollama:
     image: ollama/ollama:0.5.7
     profiles: ["local-llm"]
@@ -184,20 +255,16 @@ services:
     restart: unless-stopped
     networks: [tenderscreen]
 
-  # one-shot: downloads the model named in OLLAMA_MODEL (from .env) into the ollama volume
+  # one-shot: downloads the model named in OLLAMA_MODEL (shell / --env-file) into the ollama volume
   ollama-pull:
     image: ollama/ollama:0.5.7
     profiles: ["local-llm"]
-    env_file:
-      - path: .env.example
-        required: true
-      - path: .env
-        required: false
     environment:
       OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-}
     # pulls OLLAMA_MODEL and registers it as "tenderscreen-local" with a 4096-token context
     # (the default 2048 truncates the drafting prompt - incident INC-10)
-    entrypoint: ["/bin/sh", "-c", "test -n \"$$OLLAMA_MODEL\" || { echo 'set OLLAMA_MODEL in .env'; exit 1; }; ollama pull \"$$OLLAMA_MODEL\" && printf 'FROM %s\\nPARAMETER num_ctx 4096\\nPARAMETER temperature 0\\n' \"$$OLLAMA_MODEL\" > /tmp/Modelfile && ollama create tenderscreen-local -f /tmp/Modelfile"]
+    entrypoint: ["/bin/sh", "-c", "test -n \"$$OLLAMA_MODEL\" || { echo 'set OLLAMA_MODEL in your shell or --env-file'; exit 1; }; ollama pull \"$$OLLAMA_MODEL\" && printf 'FROM %s\\nPARAMETER num_ctx 4096\\nPARAMETER temperature 0\\n' \"$$OLLAMA_MODEL\" > /tmp/Modelfile && ollama create tenderscreen-local -f /tmp/Modelfile"]
     depends_on:
       ollama: {condition: service_healthy}
     restart: "no"

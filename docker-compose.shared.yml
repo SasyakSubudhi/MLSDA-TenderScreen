@@ -1,0 +1,27 @@
+# Overlay for a deployment that more than one person can reach (a lab server, a team VM).
+#
+#   mkdir -p secrets && printf '%s' '<choose a password>' > secrets/grafana_admin_password
+#   docker compose -f docker-compose.yml -f docker-compose.shared.yml up -d
+#
+# What it changes:
+#   * API demo controls are OFF: POST /v1/admin/provider-mode and /v1/admin/breaker-reset return 403.
+#   * Grafana anonymous access is OFF and the admin password comes from a file secret
+#     (GF_SECURITY_ADMIN_PASSWORD__FILE); only the grafana service receives it.
+# What it does NOT do: published ports stay bound to 127.0.0.1 and the API itself has no
+# authentication. Reach the UIs over an SSH tunnel, or put an authenticating reverse proxy
+# (TLS + login / SSO) in front of them. Never publish 8000, 9090, 3000 or 16686 to 0.0.0.0
+# directly. See docs/SECRETS.md.
+services:
+  api:
+    environment:
+      DEMO_MODE: "false"
+  grafana:
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+    secrets:
+      - grafana_admin_password
+
+secrets:
+  grafana_admin_password:
+    file: ${GRAFANA_ADMIN_PASSWORD_FILE:-./secrets/grafana_admin_password}
