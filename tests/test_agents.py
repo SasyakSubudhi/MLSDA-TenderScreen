@@ -148,3 +148,29 @@ def test_policy_safeguard_catches_a_relaxation_the_model_queries_miss(pipeline, 
         assert emd["status"] == "CONFLICT" and "GFR-170" in {c["chunk_id"] for c in emd["citations"]}
         derived = [e for e in trace.get("sg") if e["type"] == "reflect" and e.get("derived_queries")]
         assert any(q.get("safeguard") for e in derived for qs in e["derived_queries"].values() for q in qs or [])
+
+
+def test_expired_handoff_is_escalated_even_when_every_check_passes(pipeline, example):
+    """A clean draft that reaches the verifier after the run deadline must not be accepted."""
+    import copy
+    import time
+
+    from tenderscreen.agents.verifier import VerifierAgent
+    from tenderscreen.common.config import get_settings
+    from tenderscreen.common.runstore import MemoryTrace
+
+    pipe, _ = pipeline()
+    result, handoffs = pipe.run(example("ordinary_pass"), run_id="texp")
+    assert result["verified"]                     # within the deadline: accepted, as before
+
+    handoff = copy.deepcopy(handoffs[-1])
+    handoff["created_at"] = time.time() - get_settings().run_timeout_s - 5
+    decision, expired = VerifierAgent(MemoryTrace()).verify(handoff)
+
+    assert all(c["passed"] for c in expired["verification"]["checks"])   # nothing was wrong with the draft
+    assert decision == "escalate"
+    assert expired["verified"] is False
+    assert expired["verification"]["passed"] is False
+    assert expired["route"] == "escalate_to_human"
+    assert expired["findings"] == [] and expired["withheld"]
+    assert any("deadline" in r for r in expired["escalation"]["reasons"])

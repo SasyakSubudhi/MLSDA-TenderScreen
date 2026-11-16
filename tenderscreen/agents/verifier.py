@@ -189,9 +189,12 @@ class VerifierAgent:
         job = st["job"]
         failed = [c for c in st["checks"] if not c["passed"]]
         expired = time.time() > job["created_at"] + self.s.run_timeout_s
-        if not failed:
+        if expired:
+            # past the run deadline nothing is accepted, even a draft whose checks all pass
+            decision = "escalate"
+        elif not failed:
             decision = "accept"
-        elif job["attempt"] < self.s.max_verification_attempts and not expired:
+        elif job["attempt"] < self.s.max_verification_attempts:
             decision = "retry"
         else:
             decision = "escalate"
