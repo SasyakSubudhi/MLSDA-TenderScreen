@@ -26,10 +26,16 @@ docker compose logs --tail 20 llm-stub      # (stub profile) mode "down" / not r
    `BREAKER_OPEN_SECONDS` (20 s) and closes on the first successful probe.
 2. Rate limit: lower load (the API rate limit `RATE_LIMIT_PER_MIN`), keep
    `LLM_CACHE_ENABLED=true`, or wait for the quota window.
-3. Key / provider problem: fix `.env` (`LLM_API_KEY`, `LLM_BASE_URL`,
-   `LLM_MODEL`), then `docker compose up -d llm-gateway`. To keep working
-   during an outage, switch to the stub by removing those lines from `.env`.
-4. Stub profile: `docker compose start llm-stub` or
+3. Key / provider problem: fix `secrets/llm_api_key` (the file secret) and the
+   non-secret `LLM_BASE_URL` / `LLM_MODEL`, then `docker compose -f docker-compose.yml
+   -f docker-compose.hosted.yml up -d llm-gateway`. A gateway that exits at start
+   with `LLM_API_KEY_FILE is set but ...` has an unreadable or empty key file.
+   Provider rejections appear as `provider_rejected_request` plus the upstream
+   status code only (401 = bad key); the upstream body is never logged. To keep
+   working during an outage, switch to the stub: `docker compose up -d` without
+   the hosted override.
+4. Stub profile (demo controls; they return 403 when `DEMO_MODE=false`, as in
+   docker-compose.shared.yml): `docker compose start llm-stub` or
    `curl -X POST localhost:8000/v1/admin/provider-mode -H "Content-Type: application/json" -d "{\"mode\":\"ok\"}"`.
 5. Optionally close the breaker at once: `curl -X POST localhost:8000/v1/admin/breaker-reset`.
 6. Re-submit the degraded runs - degraded results are never cached, so a

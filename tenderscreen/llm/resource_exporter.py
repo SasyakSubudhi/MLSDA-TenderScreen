@@ -27,6 +27,9 @@ import httpx
 from prometheus_client import Gauge, start_http_server
 
 SOCKET = os.environ.get("DOCKER_SOCKET", "/var/run/docker.sock")
+# When set (the Compose default), talk to a read-only docker-socket-proxy over HTTP instead of
+# mounting the raw Docker socket into this container. The proxy only allows GET /containers/*.
+DOCKER_API_URL = os.environ.get("DOCKER_API_URL", "").strip()
 EVERY = float(os.environ.get("SCRAPE_EVERY_S", "5"))
 LABELS = ["service", "container"]
 CPU = Gauge("container_cpu_cores", "CPU cores used by the container", LABELS)
@@ -41,6 +44,8 @@ _prev: dict[str, tuple[int, float]] = {}
 
 
 def client() -> httpx.Client:
+    if DOCKER_API_URL:
+        return httpx.Client(base_url=DOCKER_API_URL, timeout=10)
     return httpx.Client(transport=httpx.HTTPTransport(uds=SOCKET), base_url="http://docker", timeout=10)
 
 

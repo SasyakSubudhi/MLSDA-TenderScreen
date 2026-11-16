@@ -14,6 +14,12 @@ Responsibilities (requirements A5, L5, D7):
 
 Provider selection is configuration only: LLM_BASE_URL / LLM_API_KEY /
 LLM_MODEL. Nothing provider-specific is in the code.
+
+The provider key is read from the file named by LLM_API_KEY_FILE when that is
+set (Docker/Compose secret, mounted only into this service); the file takes
+precedence over the LLM_API_KEY environment variable, which remains supported
+for runs outside Compose. An explicitly configured file that is unreadable or
+empty stops the service at startup with a message that never contains the key.
 """
 from __future__ import annotations
 
@@ -40,12 +46,33 @@ from .breaker import STATE_CODES, CircuitBreaker
 from .client import price
 from .stub_logic import estimate_tokens
 
+class ApiKeyConfigError(RuntimeError):
+    """LLM_API_KEY_FILE is set but cannot be used. The message never contains key material."""
+
+
+def resolve_api_key(environ=None) -> str:
+    """Provider key: LLM_API_KEY_FILE (if set) wins over LLM_API_KEY; empty means keyless."""
+    env = os.environ if environ is None else environ
+    path = (env.get("LLM_API_KEY_FILE") or "").strip()
+    if path:
+        try:
+            with open(path, encoding="utf-8") as fh:
+                key = fh.read().strip()
+        except OSError as exc:
+            raise ApiKeyConfigError(
+                f"LLM_API_KEY_FILE is set but the file cannot be read ({type(exc).__name__})") from None
+        if not key:
+            raise ApiKeyConfigError("LLM_API_KEY_FILE is set but the file is empty")
+        return key
+    return env.get("LLM_API_KEY", "")
+
+
 S = get_settings()
 logger = setup_logging("llm-gateway", S.log_level)
 setup_tracing("llm-gateway", S.otlp_endpoint)
 
 BASE_URL = os.environ.get("LLM_BASE_URL", "http://llm-stub:8200/v1").rstrip("/")
-API_KEY = os.environ.get("LLM_API_KEY", "")
+API_KEY = resolve_api_key()
 MODEL = os.environ.get("LLM_MODEL", "")
 PROVIDER_NAME = os.environ.get("LLM_PROVIDER_NAME", "stub")
 PROVIDER_TIMEOUT_S = float(os.environ.get("LLM_PROVIDER_TIMEOUT_S", "20"))
@@ -132,8 +159,9 @@ async def _call_provider(req: CompleteRequest) -> dict:
             if not _retryable(resp.status_code):
                 # our request was wrong; the provider is healthy - do not trip the breaker
                 ATTEMPTS.labels("client_error").inc()
-                raise HTTPException(502, {"error": "provider_rejected_request", "status": resp.status_code,
-                                          "body": resp.text[:300]})
+                # stable code + upstream status only: the provider's response body can echo
+                # request headers or credentials, so it is never forwarded, logged or traced
+                raise HTTPException(502, {"error": "provider_rejected_request", "status": resp.status_code})
         except httpx.TimeoutException:
             last_error = "timeout"
         except httpx.TransportError as exc:

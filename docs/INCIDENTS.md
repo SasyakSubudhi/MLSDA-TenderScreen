@@ -18,8 +18,8 @@ Real failures met while building and testing the system, newest first.
 * **Fix:** the local model is served with a 4,096-token context (Ollama
   Modelfile `PARAMETER num_ctx 4096`); every model call now has a per-task
   output cap (`plan` 200, `derive_queries` 300, `draft` 900 tokens) - a
-  latency and cost control in its own right; live-model timeouts are set in
-  `.env` (documented in README).
+  latency and cost control in its own right; live-model timeouts are set as
+  non-secret configuration (shell or `.env`, documented in README).
 * **Lesson:** the stub never exercises context limits or generation length;
   a live-model rehearsal is needed before trusting the timeouts.
 

@@ -79,7 +79,12 @@ class GatewayClient:
             except ValueError:
                 err = resp.text
             if isinstance(err, dict):
-                err = err.get("error", str(err))
+                # only the stable code (and the upstream status when given) is kept - never a free-text body
+                code = str(err.get("error", "gateway_error"))
+                status = err.get("status")
+                err = f"{code}:{status}" if isinstance(status, int) else code
+            else:
+                err = "gateway_error"
             # breaker open / budget exhausted / provider gave up: retrying here would only add latency
             raise LLMUnavailable(str(err)[:120])
         raise LLMUnavailable(last)
