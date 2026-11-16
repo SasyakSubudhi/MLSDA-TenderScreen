@@ -119,8 +119,9 @@ docker compose --profile loadtest run --rm locust --headless -u 10 -r 2 -t 60s -
 ```
 Read the `E2E complete run` line (p50/p95 of whole runs). Grafana shows three
 `agent-worker` instances in *Container uptime* and the latency drop.
-(For a clean measurement put `RATE_LIMIT_PER_MIN=0` and
-`LLM_CACHE_ENABLED=false` in `.env` first.)
+(For a clean measurement run `scripts\windows\3_RUN_LOAD_TESTS.cmd`, which applies
+`RATE_LIMIT_PER_MIN=0` and `LLM_CACHE_ENABLED=false` through a temporary env file
+and never edits your `.env`; or export those two variables in your shell.)
 
 ### 10. The section 4.1 case, handled correctly
 
@@ -159,8 +160,8 @@ Bonus: **mse emd exemption conflict** - the tender rejects bids without EMD
   from what was read, writing the justification. Never for the status or the
   route.
 * **Why does the stub make sense?** D6 asks for it: load tests must measure
-  our system, not a free tier's rate limit. A real provider is one `.env`
-  change.
+  our system, not a free tier's rate limit. A real provider is a configuration
+  change plus one key file (docs/SECRETS.md).
 * **What is the bottleneck?** The research worker: one run at a time per
   replica, ~8 sequential steps with ~4 model calls of ~0.8 s each. See
   LOADTEST.md.

@@ -1,0 +1,20 @@
+# Optional: use a hosted OpenAI-compatible provider instead of the built-in stub.
+#
+#   mkdir -p secrets && printf '%s' '<your key>' > secrets/llm_api_key     # git-ignored
+#   LLM_PROVIDER_NAME=<name> LLM_BASE_URL=<https://.../v1> LLM_MODEL=<model id> \
+#     docker compose -f docker-compose.yml -f docker-compose.hosted.yml up -d
+#
+# (or put the three non-secret values in .env; Compose uses .env for ${VAR} substitution only).
+# The key is a Compose file secret mounted at /run/secrets/llm_api_key in llm-gateway ONLY and is
+# read through LLM_API_KEY_FILE, which takes precedence over any LLM_API_KEY variable.
+# No other service receives it. See docs/SECRETS.md.
+services:
+  llm-gateway:
+    environment:
+      LLM_API_KEY_FILE: /run/secrets/llm_api_key
+    secrets:
+      - llm_api_key
+
+secrets:
+  llm_api_key:
+    file: ${LLM_API_KEY_SECRET_FILE:-./secrets/llm_api_key}

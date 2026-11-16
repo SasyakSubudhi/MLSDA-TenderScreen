@@ -48,7 +48,7 @@ Open:
 
 | What | URL |
 |---|---|
-| **Web client** (submit a bid, see the routed finding with citations) | http://localhost:8000 |
+| **Web client** (submit a bid, see the routed finding with citations) | http://localhost:8000 (all published ports listen on 127.0.0.1 only) |
 | API documentation (OpenAPI) | http://localhost:8000/docs |
 | Data contract | http://localhost:8000/v1/contract |
 | Grafana dashboard | http://localhost:3000/d/tenderscreen |
@@ -78,17 +78,22 @@ curl -s localhost:8000/v1/screenings/<run_id>/trace    # full reconstruction of 
 By default the model is the built-in `llm-stub` (OpenAI-compatible, fixed
 responses after a realistic delay) so the system works offline and load tests
 measure our system, not a provider's rate limit. Two ways to use a real model
-- configuration only, nothing in the code changes. Create a file called
-`.env` (git-ignored) next to `.env.example`:
+- configuration only, nothing in the code changes. No API key is needed for
+the default stub or for Ollama. Non-secret settings go in your shell or in a
+git-ignored `.env` (Compose uses `.env` only to fill `${VAR}` references; it is
+never injected into containers).
 
-**A. A free-tier provider** (any OpenAI-compatible endpoint):
+**A. A hosted provider** (any OpenAI-compatible endpoint). The key is a *file
+secret*, mounted into `llm-gateway` only:
 
 ```
-LLM_PROVIDER_NAME=<provider>
-LLM_BASE_URL=<https://.../v1>
-LLM_API_KEY=<your key>
-LLM_MODEL=<model id from the provider's model list>
+mkdir secrets && printf '%s' '<your key>' > secrets/llm_api_key      # git-ignored
+# non-secret values in .env or the shell:
+#   LLM_PROVIDER_NAME=<provider>  LLM_BASE_URL=<https://.../v1>  LLM_MODEL=<model id>
+docker compose -f docker-compose.yml -f docker-compose.hosted.yml up -d
 ```
+
+Details, precedence rules and shared-deployment hardening: [docs/SECRETS.md](docs/SECRETS.md).
 
 **B. A local open model, no key needed** (runs in the `ollama` container):
 
@@ -106,7 +111,8 @@ then `docker compose --profile local-llm up -d`. The first start downloads
 the model and registers it as `tenderscreen-local` with a 4,096-token context.
 On a laptop CPU a run takes a few minutes, so use it to show a real model, not
 for load tests. Every option is documented in [.env.example](.env.example);
-values in `.env` override it. No credentials, endpoints of external services
+a value in your shell or `.env` overrides the default (see the `x-tunables`
+block in `docker-compose.yml`). No credentials, endpoints of external services
 or model identifiers are stored in the repository.
 
 ---
@@ -177,7 +183,7 @@ bid security. Also escalated with both cited (scenario `S11`).
 
 | Path | What | Part |
 |---|---|---|
-| `docker-compose.yml`, `Dockerfile`, `.env.example` | 11 services (+ optional load-test and local-model profiles), one image, runtime config | 1 |
+| `docker-compose.yml` (+ `docker-compose.hosted.yml`, `docker-compose.shared.yml`), `Dockerfile`, `.env.example`, `docs/SECRETS.md` | 12 services (+ optional load-test and local-model profiles), one image, runtime config | 1 |
 | `tenderscreen/common/` | config, JSON logging, tracing, Redis streams queue, run store | 1 |
 | `tenderscreen/api/` | FastAPI service, data contract, rate limiter, web client | 1 |
 | `contracts/` | published JSON schemas | 1 |
